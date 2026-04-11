@@ -39,6 +39,26 @@ namespace ExaminationSystem.Configrations
                 .WithOne(d => d.Admin)
                 .HasForeignKey(d => d.AdminId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Seed Data
+            builder.HasData(
+                new Admin
+                {
+                    Id = Guid.Parse("A1111111-1111-1111-1111-111111111111"),
+                    FullName = "System Admin",
+                    Email = "admin@exam.com",
+                    NormalizedEmail = "ADMIN@EXAM.COM",
+                    UserName = "admin@exam.com",
+                    NormalizedUserName = "ADMIN@EXAM.COM",
+                    UserType = "Admin",
+                    EmailConfirmed = true,
+                    EmailVerifiedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    Status = AdminStatus.Active,
+                    SecurityStamp = "STATIC-SECURITY-STAMP-FOR-SEED-ADMIN",
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
         }
     }
 }

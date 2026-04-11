@@ -31,6 +31,13 @@ namespace ExaminationSystem
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            // MediatR
+            builder.Services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+
+            // In-Memory Caching
+            builder.Services.AddMemoryCache();
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
