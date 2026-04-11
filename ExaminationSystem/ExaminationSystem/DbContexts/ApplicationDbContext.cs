@@ -31,17 +31,8 @@ namespace ExaminationSystem.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-           
-            modelBuilder.ApplyConfiguration(new AdminConfiguration());
-            modelBuilder.ApplyConfiguration(new StudentConfiguration());
-            modelBuilder.ApplyConfiguration(new DiplomaConfiguration());
-            modelBuilder.ApplyConfiguration(new StudentDiplomaConfiguration());
-            modelBuilder.ApplyConfiguration(new QuizConfiguration());
-            modelBuilder.ApplyConfiguration(new QuestionConfiguration());
-            modelBuilder.ApplyConfiguration(new OptionConfiguration());
-            modelBuilder.ApplyConfiguration(new AttemptConfiguration());
-            modelBuilder.ApplyConfiguration(new AnswerConfiguration());
+        
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
     }
 }
