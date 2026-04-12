@@ -32,10 +32,9 @@ namespace ExaminationSystem.DbContexts
         {
             base.OnModelCreating(modelBuilder);
 
-          
+            // Soft Delete for ApplicationUser (applies to Admin & Student)
             modelBuilder.Entity<ApplicationUser>().HasQueryFilter(u => u.DeletedAt == null);
 
-           
             modelBuilder.ApplyConfiguration(new AdminConfiguration());
             modelBuilder.ApplyConfiguration(new StudentConfiguration());
             modelBuilder.ApplyConfiguration(new DiplomaConfiguration());
