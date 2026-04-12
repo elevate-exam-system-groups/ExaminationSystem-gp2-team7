@@ -10,30 +10,26 @@ namespace ExaminationSystem.Models
 
         public string? ProfileImageUrl { get; set; }
 
-        public string UserType { get; set; }
-
         public DateTime? EmailVerifiedAt { get; set; }
 
-        public int FailedLoginAttempts { get; set; } = 0;
+       
+        public string? EmailOtpCode { get; set; } 
 
-        public DateTime? LockoutUntil { get; set; }
+        public DateTime? EmailOtpExpiresAt { get; set; }  
 
-        // OTP for Email Verification
-        public string? EmailOtpCode { get; set; }  // Hashed OTP (6 digits)
+        public int EmailOtpAttempts { get; set; } = 0;  
 
-        public DateTime? EmailOtpExpiresAt { get; set; }  // 10 minutes TTL
+        public DateTime? EmailOtpLockedUntil { get; set; }  
 
-        public int EmailOtpAttempts { get; set; } = 0;  // Failed attempts
+       
+        public string? ResetToken { get; set; }  
 
-        public DateTime? EmailOtpLockedUntil { get; set; }  // Locked after 5 attempts
-
-        // Password Reset Token
-        public string? ResetToken { get; set; }  // JWT or UUID
-
-        public DateTime? ResetTokenExpiresAt { get; set; }  // 15 minutes TTL
+        public DateTime? ResetTokenExpiresAt { get; set; } 
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? DeletedAt { get; set; }
     }
 }

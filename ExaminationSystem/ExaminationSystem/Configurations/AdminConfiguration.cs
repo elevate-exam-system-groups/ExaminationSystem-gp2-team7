@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class AdminConfiguration : IEntityTypeConfiguration<Admin>
     {
@@ -17,23 +18,20 @@ namespace ExaminationSystem.Configrations
             builder.Property(a => a.Email)
                 .IsRequired();
 
-            builder.Property(a => a.UserType)
-                .IsRequired();
-
             builder.Property(a => a.Status)
                 .HasConversion<string>()
                 .HasDefaultValue(AdminStatus.Active);
 
-            // OTP
+           
             builder.Property(a => a.EmailOtpCode)
-                .HasMaxLength(100);  // Hashed OTP
+                .HasMaxLength(100); 
 
             builder.Property(a => a.EmailOtpAttempts)
                 .HasDefaultValue(0);
 
-            // Reset Token
+           
             builder.Property(a => a.ResetToken)
-                .HasMaxLength(500);  // JWT Token
+                .HasMaxLength(500); 
 
             builder.HasMany(a => a.CreatedDiplomas)
                 .WithOne(d => d.Admin)

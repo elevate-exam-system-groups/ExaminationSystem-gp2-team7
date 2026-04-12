@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class QuestionConfiguration : IEntityTypeConfiguration<Question>
     {
@@ -27,7 +27,7 @@ namespace ExaminationSystem.Configrations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            // Soft Delete
+            
             builder.HasQueryFilter(q => q.DeletedAt == null);
 
             builder.HasOne(q => q.Quiz)

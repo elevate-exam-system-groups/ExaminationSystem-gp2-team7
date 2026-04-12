@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class AttemptConfiguration : IEntityTypeConfiguration<Attempt>
     {
@@ -27,7 +28,7 @@ namespace ExaminationSystem.Configrations
             builder.Property(a => a.Score)
                 .HasPrecision(5, 2);
 
-            // Soft Delete
+          
             builder.HasQueryFilter(a => a.DeletedAt == null);
 
             builder.HasOne(a => a.Student)

@@ -1,4 +1,4 @@
-﻿using ExaminationSystem.Configrations;
+using ExaminationSystem.Configurations;
 using ExaminationSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,7 +15,7 @@ namespace ExaminationSystem.DbContexts
         {
         }
 
-        // DbSets
+       
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Diploma> Diplomas { get; set; }
@@ -31,6 +31,9 @@ namespace ExaminationSystem.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+          
+            modelBuilder.Entity<ApplicationUser>().HasQueryFilter(u => u.DeletedAt == null);
 
            
             modelBuilder.ApplyConfiguration(new AdminConfiguration());

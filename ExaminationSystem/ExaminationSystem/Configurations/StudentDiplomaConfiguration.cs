@@ -1,16 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class StudentDiplomaConfiguration : IEntityTypeConfiguration<StudentDiploma>
     {
         public void Configure(EntityTypeBuilder<StudentDiploma> builder)
         {
             builder.ToTable("StudentDiplomas");
-
-            builder.HasKey(se => se.EnrollmentId);
 
             builder.Property(se => se.StudentId)
                 .IsRequired();
@@ -27,7 +26,7 @@ namespace ExaminationSystem.Configrations
                 .HasPrecision(5, 2)
                 .HasDefaultValue(0m);
 
-            // Soft Delete
+            
             builder.HasQueryFilter(se => se.DeletedAt == null);
 
             builder.HasOne(se => se.Student)

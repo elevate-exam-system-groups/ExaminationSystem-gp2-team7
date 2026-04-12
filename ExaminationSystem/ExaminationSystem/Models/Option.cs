@@ -7,8 +7,6 @@ namespace ExaminationSystem.Models
     [Table("Options")]
     public class Option : BaseEntity
     {
-        public Guid MCQQuestionId { get; set; }
-
         public string OptionText { get; set; }
 
         public bool IsCorrect { get; set; } = false;
@@ -17,11 +15,12 @@ namespace ExaminationSystem.Models
 
         public string? Explanation { get; set; }
 
+        #region MCQ Question Relationship
+        public Guid MCQQuestionId { get; set; }
         [ForeignKey(nameof(MCQQuestionId))]
         public virtual MultipleChoiceQuestion MCQQuestion { get; set; }
+        #endregion
 
         public virtual ICollection<Answer> SelectedAnswers { get; set; } = new List<Answer>();
-
-        public virtual ICollection<Answer> CorrectAnswers { get; set; } = new List<Answer>();
     }
 }

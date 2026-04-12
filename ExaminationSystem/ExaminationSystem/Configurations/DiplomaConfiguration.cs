@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class DiplomaConfiguration : IEntityTypeConfiguration<Diploma>
     {
@@ -25,7 +26,7 @@ namespace ExaminationSystem.Configrations
                 .HasConversion<string>()
                 .HasDefaultValue(DiplomaStatus.Draft);
 
-            // Soft Delete
+           
             builder.HasQueryFilter(d => d.DeletedAt == null);
 
             builder.HasOne(d => d.Admin)
