@@ -32,7 +32,7 @@ namespace ExaminationSystem.DbContexts
         {
             base.OnModelCreating(modelBuilder);
 
-            // IsDeleted هي computed property مش محتاجة column في الداتابيز
+           
             modelBuilder.Entity<ApplicationUser>().Ignore(u => u.IsDeleted);
             modelBuilder.Entity<Diploma>().Ignore(d => d.IsDeleted);
             modelBuilder.Entity<StudentDiploma>().Ignore(sd => sd.IsDeleted);
@@ -42,7 +42,7 @@ namespace ExaminationSystem.DbContexts
             modelBuilder.Entity<Attempt>().Ignore(a => a.IsDeleted);
             modelBuilder.Entity<Answer>().Ignore(a => a.IsDeleted);
 
-            // Soft Delete for ApplicationUser (applies to Admin & Student)
+            
             modelBuilder.Entity<ApplicationUser>().HasQueryFilter(u => u.DeletedAt == null);
 
             modelBuilder.ApplyConfiguration(new AdminConfiguration());
