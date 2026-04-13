@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class StudentConfiguration : IEntityTypeConfiguration<Student>
     {
@@ -17,23 +18,20 @@ namespace ExaminationSystem.Configrations
             builder.Property(s => s.Email)
                 .IsRequired();
 
-            builder.Property(s => s.UserType)
-                .IsRequired();
-
             builder.Property(s => s.Status)
                 .HasConversion<string>()
                 .HasDefaultValue(StudentStatus.Pending);
 
-            // OTP
+           
             builder.Property(s => s.EmailOtpCode)
-                .HasMaxLength(100);  // Hashed OTP
+                .HasMaxLength(100);  
 
             builder.Property(s => s.EmailOtpAttempts)
                 .HasDefaultValue(0);
 
-            // Reset Token
+           
             builder.Property(s => s.ResetToken)
-                .HasMaxLength(500);  // JWT Token
+                .HasMaxLength(500);
 
             builder.HasMany(s => s.Enrollments)
                 .WithOne(se => se.Student)

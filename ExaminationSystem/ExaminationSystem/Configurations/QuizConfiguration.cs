@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class QuizConfiguration : IEntityTypeConfiguration<Quiz>
     {
@@ -30,7 +31,7 @@ namespace ExaminationSystem.Configrations
                 .HasConversion<string>()
                 .HasDefaultValue(QuizStatus.Draft);
 
-            // Soft Delete
+            
             builder.HasQueryFilter(q => q.DeletedAt == null);
 
             builder.HasOne(q => q.Diploma)

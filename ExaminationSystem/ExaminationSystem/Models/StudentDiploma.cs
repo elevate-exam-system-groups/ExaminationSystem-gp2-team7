@@ -1,42 +1,28 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using ExaminationSystem.Models.Enums;
 
 namespace ExaminationSystem.Models
 {
     [Table("StudentDiplomas")]
-    public class StudentDiploma
+    public class StudentDiploma : BaseEntity
     {
-        [System.ComponentModel.DataAnnotations.Key]
-        public Guid EnrollmentId { get; set; } = Guid.NewGuid();
-
-        public Guid StudentId { get; set; }
-
-        public Guid DiplomaId { get; set; }
-
-        public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
-
         public EnrollmentStatus Status { get; set; } = EnrollmentStatus.Active;
 
         public decimal Progress { get; set; } = 0m;
 
         public DateTime? CompletedAt { get; set; }
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? DeletedAt { get; set; }
-
+        #region Student Relationship
+        public Guid StudentId { get; set; }
         [ForeignKey(nameof(StudentId))]
         public virtual Student Student { get; set; }
+        #endregion
 
+        #region Diploma Relationship
+        public Guid DiplomaId { get; set; }
         [ForeignKey(nameof(DiplomaId))]
         public virtual Diploma Diploma { get; set; }
-    }
-
-    public enum EnrollmentStatus
-    {
-        Active,
-        Completed,
-        Archived,
-        Dropped
+        #endregion
     }
 }

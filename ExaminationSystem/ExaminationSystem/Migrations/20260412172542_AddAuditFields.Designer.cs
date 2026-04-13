@@ -4,6 +4,7 @@ using ExaminationSystem.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExaminationSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260412172542_AddAuditFields")]
+    partial class AddAuditFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,12 +147,6 @@ namespace ExaminationSystem.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("OtpResendCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("OtpResendWindowStart")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -301,9 +298,6 @@ namespace ExaminationSystem.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("TotalQuizCount")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -315,38 +309,6 @@ namespace ExaminationSystem.Migrations
                     b.HasIndex("AdminId");
 
                     b.ToTable("Diplomas", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            AdminId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Master front-end and back-end technologies including HTML, CSS, JavaScript, C#, and ASP.NET Core.",
-                            Status = "Published",
-                            Title = "Full-Stack Web Development",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            AdminId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Learn Python, statistics, data analysis, and ML algorithms from scratch to advanced level.",
-                            Status = "Published",
-                            Title = "Data Science & Machine Learning",
-                            UpdatedAt = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = new Guid("d3333333-3333-3333-3333-333333333333"),
-                            AdminId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Build cross-platform mobile applications using Flutter and Dart.",
-                            Status = "Draft",
-                            Title = "Mobile App Development",
-                            UpdatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Option", b =>
@@ -705,31 +667,6 @@ namespace ExaminationSystem.Migrations
                         .HasDefaultValue("Active");
 
                     b.ToTable("Admins", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ff51b962-b479-4a4e-b57e-7234ff63760e",
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@exam.com",
-                            EmailConfirmed = true,
-                            EmailOtpAttempts = 0,
-                            EmailVerifiedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FailedLoginAttempts = 0,
-                            FullName = "System Admin",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@EXAM.COM",
-                            NormalizedUserName = "ADMIN@EXAM.COM",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "STATIC-SECURITY-STAMP-FOR-SEED-ADMIN",
-                            TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            UserName = "admin@exam.com",
-                            UserType = "Admin",
-                            Status = "Active"
-                        });
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Student", b =>

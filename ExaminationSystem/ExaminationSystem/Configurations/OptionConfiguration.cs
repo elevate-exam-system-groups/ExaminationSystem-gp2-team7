@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class OptionConfiguration : IEntityTypeConfiguration<Option>
     {
@@ -22,7 +22,7 @@ namespace ExaminationSystem.Configrations
             builder.Property(o => o.OrderIndex)
                 .IsRequired();
 
-            // Soft Delete
+           
             builder.HasQueryFilter(o => o.DeletedAt == null);
 
             builder.HasOne(o => o.MCQQuestion)
