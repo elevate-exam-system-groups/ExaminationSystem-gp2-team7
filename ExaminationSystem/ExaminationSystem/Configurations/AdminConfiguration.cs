@@ -21,29 +21,15 @@ namespace ExaminationSystem.Configurations
             builder.Property(a => a.Status)
                 .HasConversion<string>()
                 .HasDefaultValue(AdminStatus.Active);
-
-<<<<<<< HEAD:ExaminationSystem/ExaminationSystem/Configurations/AdminConfiguration.cs
-           
+     
             builder.Property(a => a.EmailOtpCode)
                 .HasMaxLength(100); 
-=======
-
-            builder.Property(a => a.EmailOtpCode)
-                .HasMaxLength(100);
->>>>>>> dev:ExaminationSystem/ExaminationSystem/Configrations/AdminConfiguration.cs
 
             builder.Property(a => a.EmailOtpAttempts)
                 .HasDefaultValue(0);
 
-<<<<<<< HEAD:ExaminationSystem/ExaminationSystem/Configurations/AdminConfiguration.cs
-           
             builder.Property(a => a.ResetToken)
                 .HasMaxLength(500); 
-=======
-
-            builder.Property(a => a.ResetToken)
-                .HasMaxLength(500);
->>>>>>> dev:ExaminationSystem/ExaminationSystem/Configrations/AdminConfiguration.cs
 
             builder.HasMany(a => a.CreatedDiplomas)
                 .WithOne(d => d.Admin)
