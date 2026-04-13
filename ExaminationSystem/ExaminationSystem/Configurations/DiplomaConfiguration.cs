@@ -26,7 +26,11 @@ namespace ExaminationSystem.Configurations
                 .HasConversion<string>()
                 .HasDefaultValue(DiplomaStatus.Draft);
 
+<<<<<<< HEAD:ExaminationSystem/ExaminationSystem/Configurations/DiplomaConfiguration.cs
            
+=======
+
+>>>>>>> dev:ExaminationSystem/ExaminationSystem/Configrations/DiplomaConfiguration.cs
             builder.HasQueryFilter(d => d.DeletedAt == null);
 
             builder.HasOne(d => d.Admin)
