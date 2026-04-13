@@ -12,6 +12,8 @@ namespace ExaminationSystem.Models
 
         public string? Description { get; set; }
 
+        public int TotalQuizCount { get; set; }
+
         public DiplomaStatus Status { get; set; } = DiplomaStatus.Draft;
 
         #region Admin Relationship
