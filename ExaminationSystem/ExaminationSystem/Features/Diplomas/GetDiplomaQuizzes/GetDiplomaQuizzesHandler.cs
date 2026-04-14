@@ -42,7 +42,7 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
                 return Result<List<DiplomaQuizResponse>>.Failure(
                     "Diploma not found.", StatusCodes.Status404NotFound);
 
-            if (diploma.Status != DiplomaStatus.Published)
+            if (diploma.Status != Models.Enums.DiplomaStatus.Published)
                 return Result<List<DiplomaQuizResponse>>.Failure(
                     "Diploma is not currently accessible.", StatusCodes.Status403Forbidden);
 
@@ -60,7 +60,7 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
 
         // ── Helpers ────────────────────────────────────────────────────────────────
 
-        private async Task<(bool Exists, DiplomaStatus Status)> GetDiplomaStatusAsync(
+        private async Task<(bool Exists, Models.Enums.DiplomaStatus Status)> GetDiplomaStatusAsync(
             Guid diplomaId, CancellationToken cancellationToken)
         {
             return await _context.Diplomas
@@ -74,7 +74,7 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
         {
             var quizzes = await _context.Quizzes
                             .Where(q => q.DiplomaId == request.DiplomaId
-                                && q.Status == QuizStatus.Published)
+                                && q.Status == Models.Enums.QuizStatus.Published)
                             .Select(q => new
                             {
                                 q.Id,

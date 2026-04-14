@@ -9,6 +9,6 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
         public int DurationMinutes { get; set; }
         public int AttemptCount { get; set; }
         public decimal? LastScore { get; set; }
-        public AttemptStatus? Status { get; set; }
+        public Models.Enums.AttemptStatus? Status { get; set; }
     }
 }
