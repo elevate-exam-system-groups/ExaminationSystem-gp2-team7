@@ -41,6 +41,9 @@ namespace ExaminationSystem
             // In-Memory Caching
             builder.Services.AddMemoryCache();
 
+            // Email Service
+            builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -48,6 +51,7 @@ namespace ExaminationSystem
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
