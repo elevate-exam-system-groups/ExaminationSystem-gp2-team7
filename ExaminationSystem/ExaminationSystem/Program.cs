@@ -31,7 +31,8 @@ namespace ExaminationSystem
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-
+            builder.Services.Configure<JwtSettings>(
+            builder.Configuration.GetSection("JwtSettings"));
 
             // MediatR
             builder.Services.AddMediatR(cfg =>

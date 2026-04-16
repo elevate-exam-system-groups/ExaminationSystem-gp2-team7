@@ -4,6 +4,7 @@ using ExaminationSystem.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExaminationSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260415115944_refresh-token")]
+    partial class refreshtoken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -477,37 +480,6 @@ namespace ExaminationSystem.Migrations
                     b.ToTable("Quizzes", (string)null);
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Models.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiresOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("RevokedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("ExaminationSystem.Models.StudentDiploma", b =>
                 {
                     b.Property<Guid>("Id")
@@ -706,6 +678,13 @@ namespace ExaminationSystem.Migrations
                     b.ToTable("Admins", (string)null);
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Models.AuthAppUser", b =>
+                {
+                    b.HasBaseType("ExaminationSystem.Models.ApplicationUser");
+
+                    b.ToTable("AuthAppUser");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Models.Student", b =>
                 {
                     b.HasBaseType("ExaminationSystem.Models.ApplicationUser");
@@ -835,17 +814,6 @@ namespace ExaminationSystem.Migrations
                     b.Navigation("Diploma");
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Models.RefreshToken", b =>
-                {
-                    b.HasOne("ExaminationSystem.Models.ApplicationUser", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ExaminationSystem.Models.StudentDiploma", b =>
                 {
                     b.HasOne("ExaminationSystem.Models.Diploma", "Diploma")
@@ -925,6 +893,51 @@ namespace ExaminationSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Models.AuthAppUser", b =>
+                {
+                    b.HasOne("ExaminationSystem.Models.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("ExaminationSystem.Models.AuthAppUser", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("ExaminationSystem.Models.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("CreatedOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("ExpiresOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("RevokedOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Token")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("UserId");
+
+                            b1.ToTable("RefreshTokens");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("RefreshTokens");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Models.Student", b =>
                 {
                     b.HasOne("ExaminationSystem.Models.ApplicationUser", null)
@@ -932,11 +945,6 @@ namespace ExaminationSystem.Migrations
                         .HasForeignKey("ExaminationSystem.Models.Student", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ExaminationSystem.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Attempt", b =>
