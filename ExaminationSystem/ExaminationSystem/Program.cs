@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
+using FluentValidation;
 
 namespace ExaminationSystem
 {
@@ -34,6 +35,9 @@ namespace ExaminationSystem
             // MediatR
             builder.Services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+
+            // FluentValidation
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
             // In-Memory Caching
             builder.Services.AddMemoryCache();
