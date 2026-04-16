@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem
 {
@@ -19,7 +19,7 @@ namespace ExaminationSystem
                     builder.Configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly("ExaminationSystem")));
 
-            // 2️⃣ Identity
+            // 2️⃣ Identity    
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -31,12 +31,16 @@ namespace ExaminationSystem
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            builder.Services.Configure<JwtSettings>(
+            builder.Configuration.GetSection("JwtSettings"));
+
             // MediatR
             builder.Services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
 
             // In-Memory Caching
             builder.Services.AddMemoryCache();
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

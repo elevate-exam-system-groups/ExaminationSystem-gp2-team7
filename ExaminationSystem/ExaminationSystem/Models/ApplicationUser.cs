@@ -4,10 +4,9 @@ using System;
 namespace ExaminationSystem.Models
 {
     
-    public abstract partial class ApplicationUser : IdentityUser<Guid>
+    public partial class ApplicationUser : IdentityUser<Guid>
     {
         public string FullName { get; set; }
-
         public string? ProfileImageUrl { get; set; }
 
         public DateTime? EmailVerifiedAt { get; set; }
