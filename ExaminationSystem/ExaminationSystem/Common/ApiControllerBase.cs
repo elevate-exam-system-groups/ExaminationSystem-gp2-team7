@@ -6,7 +6,7 @@ namespace ExaminationSystem.Common
     [ApiController]
     public class ApiControllerBase : ControllerBase
     {
-        protected Guid StudentId => Guid.TryParse(
+        protected Guid UserId => Guid.TryParse(
             User.FindFirstValue(ClaimTypes.NameIdentifier), out var id)?
             id : Guid.Empty;
 

@@ -1,5 +1,4 @@
 ﻿using ExaminationSystem.Common;
-using ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes;
 using MediatR;
 
 namespace ExaminationSystem.Features.Auth.Login

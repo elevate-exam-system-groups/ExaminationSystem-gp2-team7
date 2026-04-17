@@ -1,12 +1,13 @@
 ﻿using ExaminationSystem.Common;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Client;
 
-namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
+namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
 {
     public class GetDiplomaQuizzesHandler 
         : IRequestHandler<GetDiplomaQuizzesQuery, Result<List<DiplomaQuizResponse>>>
@@ -60,7 +61,7 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
 
         // ── Helpers ────────────────────────────────────────────────────────────────
 
-        private async Task<(bool Exists, Models.Enums.DiplomaStatus Status)> GetDiplomaStatusAsync(
+        private async Task<(bool Exists, DiplomaStatus Status)> GetDiplomaStatusAsync(
             Guid diplomaId, CancellationToken cancellationToken)
         {
             return await _context.Diplomas
@@ -74,7 +75,7 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
         {
             var quizzes = await _context.Quizzes
                             .Where(q => q.DiplomaId == request.DiplomaId
-                                && q.Status == Models.Enums.QuizStatus.Published)
+                                && q.Status == QuizStatus.Published)
                             .Select(q => new
                             {
                                 q.Id,

@@ -18,10 +18,10 @@ namespace ExaminationSystem.Common
             StatusCode = statusCode;
         }
 
-        public static Result<T> Success(T data) 
-            => new(true, data, null, 200);
+        public static Result<T> Success(T data, int statusCode = StatusCodes.Status200OK) 
+            => new(true, data, null, statusCode);
 
-        public static Result<T> Failure(string error, int statusCode = 400)
+        public static Result<T> Failure(string error, int statusCode = StatusCodes.Status400BadRequest)
             => new(false, default, error, statusCode);
 
         
