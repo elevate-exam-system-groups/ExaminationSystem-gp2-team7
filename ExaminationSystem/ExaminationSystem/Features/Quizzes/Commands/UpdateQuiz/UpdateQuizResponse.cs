@@ -1,8 +1,8 @@
-﻿using ExaminationSystem.Models;
+﻿using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Features.Quizzes.CreateQuiz
+namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
 {
-    public class CreateQuizResponse
+    public class UpdateQuizResponse
     {
         public Guid QuizId { get; set; }
         public string Title { get; set; }
@@ -12,6 +12,5 @@ namespace ExaminationSystem.Features.Quizzes.CreateQuiz
         public int? MaxAttempts { get; set; }
         public string? Instructions { get; set; }
         public QuizStatus Status { get; set; }
-        public int TotalQuestionsCache { get; set; }
     }
 }

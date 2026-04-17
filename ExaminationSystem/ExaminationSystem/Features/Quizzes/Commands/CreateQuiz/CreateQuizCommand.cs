@@ -2,9 +2,10 @@
 using ExaminationSystem.Models;
 using MediatR;
 
-namespace ExaminationSystem.Features.Quizzes.CreateQuiz
+namespace ExaminationSystem.Features.Quizzes.Commands.CreateQuiz
 {
     public record CreateQuizCommand(
+        Guid AdminId,
         string Title,
         Guid DiplomaId,
         int DurationMinutes,

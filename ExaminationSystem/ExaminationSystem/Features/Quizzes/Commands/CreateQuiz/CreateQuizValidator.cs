@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace ExaminationSystem.Features.Quizzes.CreateQuiz
+namespace ExaminationSystem.Features.Quizzes.Commands.CreateQuiz
 {
     public class CreateQuizValidator : AbstractValidator<CreateQuizCommand>
     {
