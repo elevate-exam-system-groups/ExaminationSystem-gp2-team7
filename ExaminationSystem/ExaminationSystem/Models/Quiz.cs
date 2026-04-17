@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using ExaminationSystem.Models.Enums;
 
 namespace ExaminationSystem.Models
 {
     [Table("Quizzes")]
     public class Quiz : BaseEntity
     {
-        public Guid DiplomaId { get; set; }
-
         public string Title { get; set; }
 
         public int DurationMinutes { get; set; }
@@ -23,19 +22,14 @@ namespace ExaminationSystem.Models
 
         public int TotalQuestionsCache { get; set; } = 0;
 
-        public DateTime? DeletedAt { get; set; }
-
+        #region Diploma Relationship
+        public Guid DiplomaId { get; set; }
         [ForeignKey(nameof(DiplomaId))]
         public virtual Diploma Diploma { get; set; }
+        #endregion
 
         public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
 
         public virtual ICollection<Attempt> Attempts { get; set; } = new List<Attempt>();
-    }
-
-    public enum QuizStatus
-    {
-        Draft,
-        Published
     }
 }

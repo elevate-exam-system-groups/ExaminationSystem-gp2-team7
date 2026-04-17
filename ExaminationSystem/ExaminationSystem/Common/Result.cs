@@ -1,4 +1,7 @@
-﻿namespace ExaminationSystem.Common
+﻿using ExaminationSystem.Features.Auth.Login;
+using Microsoft.OpenApi.Any;
+
+namespace ExaminationSystem.Common
 {
     public class Result<T>
     {
@@ -20,5 +23,7 @@
 
         public static Result<T> Failure(string error, int statusCode = StatusCodes.Status400BadRequest)
             => new(false, default, error, statusCode);
+
+        
     }
 }

@@ -5,10 +5,6 @@ namespace ExaminationSystem.Models
 {
     public class MultipleChoiceQuestion : Question
     {
-        public MultipleChoiceQuestion()
-        {
-            QuestionType = "MCQ";
-        }
 
         public bool AllowMultipleCorrectAnswers { get; set; } = false;
 

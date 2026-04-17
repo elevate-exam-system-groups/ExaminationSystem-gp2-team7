@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ExaminationSystem.Models;
 
-namespace ExaminationSystem.Configrations
+namespace ExaminationSystem.Configurations
 {
     public class AnswerConfiguration : IEntityTypeConfiguration<Answer>
     {
@@ -19,7 +19,7 @@ namespace ExaminationSystem.Configrations
             builder.Property(a => a.IsCorrect)
                 .IsRequired();
 
-            // Soft Delete
+            
             builder.HasQueryFilter(a => a.DeletedAt == null);
 
             builder.HasOne(a => a.Attempt)

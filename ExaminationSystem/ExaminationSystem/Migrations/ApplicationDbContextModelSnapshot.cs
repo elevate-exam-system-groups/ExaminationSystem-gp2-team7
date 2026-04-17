@@ -31,20 +31,20 @@ namespace ExaminationSystem.Migrations
                     b.Property<Guid>("AttemptId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool?>("CorrectTrueAnswer")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
-
-                    b.Property<Guid?>("OptionId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier");
@@ -61,11 +61,12 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AttemptId");
-
-                    b.HasIndex("OptionId");
 
                     b.HasIndex("QuestionId");
 
@@ -89,6 +90,15 @@ namespace ExaminationSystem.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -116,9 +126,6 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime?>("EmailVerifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FailedLoginAttempts")
-                        .HasColumnType("int");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -130,9 +137,6 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("LockoutUntil")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -140,6 +144,12 @@ namespace ExaminationSystem.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("OtpResendCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("OtpResendWindowStart")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -169,13 +179,12 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -204,8 +213,14 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool?>("Passed")
                         .HasColumnType("bit");
@@ -238,6 +253,9 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("QuizId");
@@ -259,8 +277,14 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -277,46 +301,20 @@ namespace ExaminationSystem.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("TotalQuizCount")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AdminId");
 
                     b.ToTable("Diplomas", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            AdminId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Master front-end and back-end technologies including HTML, CSS, JavaScript, C#, and ASP.NET Core.",
-                            Status = "Published",
-                            Title = "Full-Stack Web Development",
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            AdminId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Learn Python, statistics, data analysis, and ML algorithms from scratch to advanced level.",
-                            Status = "Published",
-                            Title = "Data Science & Machine Learning",
-                            UpdatedAt = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = new Guid("d3333333-3333-3333-3333-333333333333"),
-                            AdminId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Build cross-platform mobile applications using Flutter and Dart.",
-                            Status = "Draft",
-                            Title = "Mobile App Development",
-                            UpdatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Option", b =>
@@ -328,8 +326,14 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Explanation")
                         .HasColumnType("nvarchar(max)");
@@ -350,6 +354,9 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MCQQuestionId");
@@ -366,8 +373,14 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("OrderIndex")
                         .HasColumnType("int");
@@ -386,6 +399,9 @@ namespace ExaminationSystem.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -407,8 +423,14 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("DiplomaId")
                         .HasColumnType("uniqueidentifier");
@@ -445,6 +467,9 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DiplomaId");
@@ -452,23 +477,60 @@ namespace ExaminationSystem.Migrations
                     b.ToTable("Quizzes", (string)null);
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Models.StudentDiploma", b =>
                 {
-                    b.Property<Guid>("EnrollmentId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DiplomaId")
+                    b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EnrolledAt")
-                        .HasColumnType("datetime2");
+                    b.Property<Guid>("DiplomaId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Progress")
                         .ValueGeneratedOnAdd()
@@ -488,7 +550,10 @@ namespace ExaminationSystem.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("EnrollmentId");
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("DiplomaId");
 
@@ -632,9 +697,6 @@ namespace ExaminationSystem.Migrations
                 {
                     b.HasBaseType("ExaminationSystem.Models.ApplicationUser");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -642,39 +704,11 @@ namespace ExaminationSystem.Migrations
                         .HasDefaultValue("Active");
 
                     b.ToTable("Admins", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ff51b962-b479-4a4e-b57e-7234ff63760e",
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@exam.com",
-                            EmailConfirmed = true,
-                            EmailOtpAttempts = 0,
-                            EmailVerifiedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FailedLoginAttempts = 0,
-                            FullName = "System Admin",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@EXAM.COM",
-                            NormalizedUserName = "ADMIN@EXAM.COM",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "STATIC-SECURITY-STAMP-FOR-SEED-ADMIN",
-                            TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            UserName = "admin@exam.com",
-                            UserType = "Admin",
-                            Status = "Active"
-                        });
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Student", b =>
                 {
                     b.HasBaseType("ExaminationSystem.Models.ApplicationUser");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -719,10 +753,6 @@ namespace ExaminationSystem.Migrations
                         .HasForeignKey("AttemptId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("ExaminationSystem.Models.Option", null)
-                        .WithMany("CorrectAnswers")
-                        .HasForeignKey("OptionId");
 
                     b.HasOne("ExaminationSystem.Models.Question", "Question")
                         .WithMany("Answers")
@@ -803,6 +833,17 @@ namespace ExaminationSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Diploma");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Models.RefreshToken", b =>
+                {
+                    b.HasOne("ExaminationSystem.Models.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.StudentDiploma", b =>
@@ -893,6 +934,11 @@ namespace ExaminationSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ExaminationSystem.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("RefreshTokens");
+                });
+
             modelBuilder.Entity("ExaminationSystem.Models.Attempt", b =>
                 {
                     b.Navigation("Answers");
@@ -907,8 +953,6 @@ namespace ExaminationSystem.Migrations
 
             modelBuilder.Entity("ExaminationSystem.Models.Option", b =>
                 {
-                    b.Navigation("CorrectAnswers");
-
                     b.Navigation("SelectedAnswers");
                 });
 
