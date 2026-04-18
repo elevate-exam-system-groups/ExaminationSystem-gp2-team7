@@ -6,7 +6,6 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
         string Title,
         int DurationMinutes,
         decimal PassScore,
-        int? MaxAttempts,
         string? Instructions
         );
 }

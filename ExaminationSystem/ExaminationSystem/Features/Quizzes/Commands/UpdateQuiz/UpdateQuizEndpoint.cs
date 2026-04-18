@@ -7,7 +7,7 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
 {
     [ApiController]
     [Route("/api/admin/quizzes")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrator")]
     public class UpdateQuizEndpoint(IMediator mediator) : ApiControllerBase
     {
         [HttpPut("{quizId:guid}")]
@@ -22,7 +22,6 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
                 request.Title,
                 request.DurationMinutes,
                 request.PassScore,
-                request.MaxAttempts,
                 request.Instructions
             );
 
