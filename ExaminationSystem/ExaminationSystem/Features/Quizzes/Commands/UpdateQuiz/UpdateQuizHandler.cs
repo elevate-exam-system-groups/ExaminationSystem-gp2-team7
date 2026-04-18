@@ -41,8 +41,7 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
             // Update Quiz
             quiz.Title = command.Title;
             quiz.DurationMinutes = command.DurationMinutes;
-            quiz.PassScore = command.PassScore;
-            quiz.MaxAttempts = command.MaxAttempts;
+            quiz.PassScore = command.PassScore ?? 60m;
             quiz.Instructions = command.Instructions;
             quiz.UpdatedAt = DateTime.UtcNow;
             quiz.UpdatedBy = command.AdminId;

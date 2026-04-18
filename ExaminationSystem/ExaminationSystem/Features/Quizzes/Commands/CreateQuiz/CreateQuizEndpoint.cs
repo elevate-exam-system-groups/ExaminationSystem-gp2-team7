@@ -7,7 +7,7 @@ namespace ExaminationSystem.Features.Quizzes.Commands.CreateQuiz
 {
     [ApiController]
     [Route("api/admin/quizzes")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Administrator")]
     public class CreateQuizEndpoint(IMediator mediator) : ApiControllerBase
     {
 

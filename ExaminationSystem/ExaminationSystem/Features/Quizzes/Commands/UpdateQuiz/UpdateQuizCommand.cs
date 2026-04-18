@@ -10,8 +10,7 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
         Guid QuizId,
         string Title,
         int DurationMinutes,
-        decimal PassScore,
-        int? MaxAttempts,
-       string Instructions
+        decimal? PassScore,
+        string? Instructions
         ) : IRequest<Result<UpdateQuizResponse>>;
 }
