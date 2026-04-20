@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using E_Commerce.Domain.Contracts;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace E_Commerce.Persistence.Repositories
+namespace ExaminationSystem.Repositories
 {
     public class GenericRepository<IEntity> : IGenericRepository<IEntity> where IEntity : BaseEntity
     {
@@ -22,5 +23,21 @@ namespace E_Commerce.Persistence.Repositories
         public async Task<IEntity?> GetByIdAsync(Guid id)=> await _dbContext.Set<IEntity>().FindAsync(id);
         public void Remove(IEntity entity)=> _dbContext.Set<IEntity>().Remove(entity);
         public void Update(IEntity entity)=> _dbContext.Set<IEntity>().Update(entity);
+
+        // Added for SubmitQuiz task
+        public async Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate)
+            => await _dbContext.Set<IEntity>().FirstOrDefaultAsync(predicate);
+
+        public async Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate, params Expression<Func<IEntity, object>>[] includes)
+        {
+            IQueryable<IEntity> query = _dbContext.Set<IEntity>();
+            foreach (var include in includes)
+                query = query.Include(include);
+            return await query.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate)
+            => await _dbContext.Set<IEntity>().CountAsync(predicate);
     }
 }
+

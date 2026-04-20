@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExaminationSystem.Models;
 
-namespace E_Commerce.Domain.Contracts
+namespace ExaminationSystem.Contracts
 {
     public interface IUnitOfWork
     {

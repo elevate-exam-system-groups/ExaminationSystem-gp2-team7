@@ -1,5 +1,8 @@
+using ExaminationSystem.Common;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,14 +38,26 @@ namespace ExaminationSystem
             builder.Configuration.GetSection("JwtSettings"));
 
             // MediatR
+            //builder.Services.AddMediatR(cfg =>
+            //    cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+
             builder.Services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+            {
+                cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            });
+            // FluentValidation
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
 
             // In-Memory Caching
             builder.Services.AddMemoryCache();
 
             // Email Service
             builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
+
+            // Unit of Work
+            builder.Services.AddScoped<ExaminationSystem.Contracts.IUnitOfWork, ExaminationSystem.Repositories.UnitOfWork>();
 
 
             builder.Services.AddControllers();
