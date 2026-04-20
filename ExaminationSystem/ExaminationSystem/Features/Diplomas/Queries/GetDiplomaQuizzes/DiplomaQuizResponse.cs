@@ -1,6 +1,7 @@
 ﻿using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 
-namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
+namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
 {
     public class DiplomaQuizResponse
     {
@@ -9,6 +10,6 @@ namespace ExaminationSystem.Features.Diplomas.GetDiplomaQuizzes
         public int DurationMinutes { get; set; }
         public int AttemptCount { get; set; }
         public decimal? LastScore { get; set; }
-        public Models.Enums.AttemptStatus? Status { get; set; }
+        public AttemptStatus? Status { get; set; }
     }
 }

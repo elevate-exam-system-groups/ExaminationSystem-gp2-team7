@@ -3,8 +3,12 @@ using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace ExaminationSystem
 {
@@ -34,8 +38,28 @@ namespace ExaminationSystem
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            builder.Services.Configure<JwtSettings>(
-            builder.Configuration.GetSection("JwtSettings"));
+            // 3️⃣ JWT Authentication
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                };
+            });
 
             // MediatR
             //builder.Services.AddMediatR(cfg =>
@@ -48,7 +72,6 @@ namespace ExaminationSystem
             });
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-
 
             // In-Memory Caching
             builder.Services.AddMemoryCache();
@@ -63,7 +86,39 @@ namespace ExaminationSystem
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Examination System API", Version = "v1" });
+
+                // 1. Define the Security Scheme (This adds the "Authorize" button in Swagger UI)
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization", 
+                    Type = SecuritySchemeType.ApiKey, 
+                    Scheme = "Bearer", 
+                    BearerFormat = "JWT", 
+                    In = ParameterLocation.Header, 
+                    Description = "Enter 'Bearer' [space] and then your valid token." 
+                });
+
+                // 2. Apply the Security Requirement Globally (This ensures Swagger actually sends the token with your requests)
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer" // ⚠️ CRITICAL: This ID must strictly match the name defined in AddSecurityDefinition above
+                            }
+                        },
+                        Array.Empty<string>() // An empty array means this authentication requirement applies globally to all endpoints
+                    }
+                });
+            });
+
 
             var app = builder.Build();
 
@@ -76,6 +131,8 @@ namespace ExaminationSystem
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
