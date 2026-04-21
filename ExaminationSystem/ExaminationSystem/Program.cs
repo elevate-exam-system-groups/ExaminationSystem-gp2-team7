@@ -130,6 +130,9 @@ namespace ExaminationSystem
                 app.UseSwaggerUI();
             }
 
+            // Global Error Handling
+            app.UseMiddleware<ExaminationSystem.Middlewares.GlobalExceptionMiddleware>();
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

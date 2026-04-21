@@ -1,4 +1,3 @@
-using ExaminationSystem.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,11 +35,7 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
            
             var result = await _mediator.Send(command, cancellationToken);
 
-            
-            if (result.IsSuccess)
-                return Ok(result.Data);
-
-            return StatusCode(result.StatusCode, new { message = result.Error });
+            return Ok(result);
         }
     }
 }

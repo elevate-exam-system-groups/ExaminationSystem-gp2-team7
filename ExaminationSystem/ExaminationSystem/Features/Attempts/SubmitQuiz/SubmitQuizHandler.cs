@@ -1,4 +1,4 @@
-using ExaminationSystem.Common;
+using ExaminationSystem.Common.Exceptions;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
 using ExaminationSystem.Contracts;
@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ExaminationSystem.Features.Attempts.SubmitQuiz
 {
-    public class SubmitQuizHandler : IRequestHandler<SubmitQuizCommand, Result<SubmitQuizResponse>>
+    public class SubmitQuizHandler : IRequestHandler<SubmitQuizCommand, SubmitQuizResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -15,7 +15,7 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<SubmitQuizResponse>> Handle(
+        public async Task<SubmitQuizResponse> Handle(
             SubmitQuizCommand request, CancellationToken cancellationToken)
         {
            
@@ -27,15 +27,15 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
             
             var attempt = await attemptRepo.GetByIdAsync(request.AttemptId);
             if (attempt == null)
-                return Result<SubmitQuizResponse>.Failure("Attempt not found.", 404);
+                throw new NotFoundException("Attempt not found.");
 
            
             if (attempt.StudentId != request.StudentId)
-                return Result<SubmitQuizResponse>.Failure("You are not the owner of this attempt.", 403);
+                throw new ForbiddenException("You are not the owner of this attempt.");
 
            
             if (attempt.Status != AttemptStatus.InProgress)
-                return Result<SubmitQuizResponse>.Failure("This attempt has already been submitted.", 409);
+                throw new ConflictException("This attempt has already been submitted.");
 
             
             var quiz = await quizRepo.GetByIdAsync(attempt.QuizId);
@@ -90,7 +90,7 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
                 Status = newStatus.ToString()
             };
 
-            return Result<SubmitQuizResponse>.Success(response);
+            return response;
         }
     }
 }
