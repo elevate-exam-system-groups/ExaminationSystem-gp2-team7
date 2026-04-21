@@ -1,6 +1,4 @@
 using ExaminationSystem.DbContexts;
-using ExaminationSystem.DbContexts;
-using ExaminationSystem.Models;
 using ExaminationSystem.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
