@@ -1,59 +1,91 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using ExaminationSystem.Common;
-using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+namespace ExaminationSystem.Features.Auth.Register
 
-namespace ExaminationSystem.Features.Auth.Login
+
 {
-    public class PostLoginHandler : IRequestHandler<PostLoginCommand, Result<LoginResponse>>
+    public class SeedIdentityHandler : IRequestHandler<SeedIdentityCommand, Result<RegisterResponse>>
     {
-
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtSettings _jwtSettings;
-        public PostLoginHandler(UserManager<ApplicationUser> userManager,
-            IOptions<JwtSettings> jwtSettings)
+
+
+        public SeedIdentityHandler(
+                RoleManager<IdentityRole<Guid>> roleManager,
+            UserManager<ApplicationUser> userManager ,
+             IOptions<JwtSettings> jwtSettings)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
+
         }
-
-        public async Task<Result<LoginResponse>> Handle
-            (PostLoginCommand loginCommand, CancellationToken cancellationToken)
+        public async Task<Result<RegisterResponse>> Handle(SeedIdentityCommand request, CancellationToken cancellationToken)
         {
+            // 1. Seed Roles
+            string[] roles = { "Admin", "Student" };
 
-            var user = await _userManager.FindByEmailAsync(loginCommand.LoginDTO.email);
-
-            if (user is null)
+            foreach (var role in roles)
             {
-                return Result<LoginResponse>.Failure("User not found", StatusCodes.Status404NotFound);
-
+                if (!await _roleManager.RoleExistsAsync(role))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole<Guid>(role));
+                }
             }
 
-            var passwordValid = await _userManager.CheckPasswordAsync(user, loginCommand.LoginDTO.password);
-            if (!passwordValid)
+            // 2. Seed Admin User
+            string adminEmail = "admin@mail.com";
+            string password = "Admin@123";
+
+            var admin = await _userManager.FindByEmailAsync(adminEmail);
+
+            if (admin == null)
             {
-                return Result<LoginResponse>.Failure("Invalid password", StatusCodes.Status401Unauthorized);
+                admin = new ApplicationUser
+                {
+                    FullName = adminEmail,
+                    Email = adminEmail ,
+                    UserName = adminEmail
+
+                };
+
+                var result = await _userManager.CreateAsync(admin, password);
+
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => $"{e.Code}: {e.Description}").ToList();
+                    return Result<RegisterResponse>.Failure(string.Join(", ", errors));
+                }
+
+
             }
+            // Add user to "Student" role
+            if (!await _roleManager.RoleExistsAsync("Admin"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole<Guid>("Admin"));
+            }
+            await _userManager.AddToRoleAsync(admin, "Admin");
 
-            // Here you would typically generate a JWT token or similar for the authenticated user
-
-            // Add user to "User" role
-            //await _userManager.AddToRoleAsync(user, "User");
-            var roles = await _userManager.GetRolesAsync(user);
-            var accessToken = GenerateAccessToken(user, roles);
+            var user_roles = await _userManager.GetRolesAsync(admin);
+            var accessToken = GenerateAccessToken(admin, user_roles);
             var refreshToken = GenerateRefreshToken();
-            await SaveRefreshTokenAsync(user, refreshToken);
+            await SaveRefreshTokenAsync(admin, refreshToken);
 
-            var response = new LoginResponse()
+            var response = new RegisterResponse()
             {
-                email = user.Email!,
+                email = admin.Email!,
+                full_name = admin.FullName!,
                 access_token = new RefreshToken
                 {
                     Token = accessToken,
@@ -67,10 +99,10 @@ namespace ExaminationSystem.Features.Auth.Login
                     ExpiresOn = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryInDays)
                 }
             };
-            return Result<LoginResponse>.Success(response);
-        }
 
-       
+
+            return Result<RegisterResponse>.Success(response);
+        }
 
 
 
@@ -123,13 +155,10 @@ namespace ExaminationSystem.Features.Auth.Login
                 CreatedOn = DateTime.UtcNow,
                 ExpiresOn = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryInDays)
             };
-            user.RefreshTokens.Add(refreshToken);
+            user.RefreshTokens.Add(refreshToken!);
 
             await _userManager.UpdateAsync(user);
         }
-
-
-
     }
-}
+    }
 

@@ -1,18 +1,21 @@
+using System.Text;
 using ExaminationSystem.DbContexts;
+using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 namespace ExaminationSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -61,7 +64,15 @@ namespace ExaminationSystem
 
             // MediatR
             builder.Services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+            {
+                cfg.RegisterServicesFromAssemblies(
+                    typeof(Program).Assembly,
+                    typeof(SeedIdentityHandler).Assembly
+                );
+            });
+
+
+
 
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -111,6 +122,14 @@ namespace ExaminationSystem
 
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                await mediator.Send(new SeedIdentityCommand());
+                
+            }
 
 
             // Configure the HTTP request pipeline.

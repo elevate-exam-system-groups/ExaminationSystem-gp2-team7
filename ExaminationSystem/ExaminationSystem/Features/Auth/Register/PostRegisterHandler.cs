@@ -44,12 +44,12 @@ namespace ExaminationSystem.Features.Auth.Register
                 return Result<RegisterResponse>.Failure(string.Join(", ", errors));
             }
 
-            // Add user to "User" role
-            if (!await _roleManager.RoleExistsAsync("User"))
+            // Add user to "Student" role
+            if (!await _roleManager.RoleExistsAsync("Student"))
             {
-                await _roleManager.CreateAsync(new IdentityRole<Guid>("User"));
+                await _roleManager.CreateAsync(new IdentityRole<Guid>("Student"));
             }
-            await _userManager.AddToRoleAsync(user, "User");
+            await _userManager.AddToRoleAsync(user, "Student");
             var roles = await _userManager.GetRolesAsync(user);
             var accessToken = GenerateAccessToken(user, roles);
             var refreshToken = GenerateRefreshToken();
