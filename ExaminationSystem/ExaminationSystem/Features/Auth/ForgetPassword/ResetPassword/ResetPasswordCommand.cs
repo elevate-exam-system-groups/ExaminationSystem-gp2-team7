@@ -1,12 +1,12 @@
-﻿using MediatR;
+using MediatR;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
 {
-    public class ResetPasswordCommand: IRequest<ResetPasswordResponse>
+    public record ResetPasswordCommand : IRequest<string>
     {
-        public string Email { get; set; }
-        public string ResetToken { get; set; }
-        public string NewPassword { get; set; }
-        public string ConfirmPassword { get; set; }
+        public string Email { get; init; }
+        public string ResetToken { get; init; }
+        public string NewPassword { get; init; }
+        public string ConfirmPassword { get; init; }
     }
 }

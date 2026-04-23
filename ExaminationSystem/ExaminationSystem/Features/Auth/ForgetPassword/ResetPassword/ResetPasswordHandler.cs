@@ -1,3 +1,4 @@
+using ExaminationSystem.Common.Exceptions;
 using ExaminationSystem.Models;
 using ExaminationSystem.Services;
 using MediatR;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
 {
-    public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, ResetPasswordResponse>
+    public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, string>
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -14,42 +15,34 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
             _userManager = userManager;
         }
 
-        public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            
-            if (string.IsNullOrEmpty(request.Email))
-                return new ResetPasswordResponse { Success = false, Message = "Email is required" };
-
-            if (string.IsNullOrEmpty(request.NewPassword))
-                return new ResetPasswordResponse { Success = false, Message = "Password is required" };
-
-            if (request.NewPassword != request.ConfirmPassword)
-                return new ResetPasswordResponse { Success = false, Message = "Passwords do not match" };
+            // FluentValidation بيتكفل بالـ validation
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                return new ResetPasswordResponse { Success = false, Message = "Invalid request" };
+                throw new BadRequestException("Invalid request.");
 
-            
+            // شيك الـ Token
             var tokenHash = OtpHelper.HashOtp(request.ResetToken);
             if (user.ResetToken != tokenHash)
-                return new ResetPasswordResponse { Success = false, Message = "Token invalid or expired" };
+                throw new BadRequestException("Token invalid or expired.");
 
-           
+            // شيك صلاحية الـ Token
             if (user.ResetTokenExpiresAt == null || user.ResetTokenExpiresAt < DateTime.UtcNow)
-                return new ResetPasswordResponse { Success = false, Message = "Token invalid or expired" };
+                throw new BadRequestException("Token invalid or expired.");
 
-           
+            // غيّر الباسورد
             await _userManager.RemovePasswordAsync(user);
             var result = await _userManager.AddPasswordAsync(user, request.NewPassword);
 
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                return new ResetPasswordResponse { Success = false, Message = errors };
+                throw new BadRequestException(errors);
             }
 
-           
+            // حدّث الـ Security Stamp ونضّف الـ Tokens
             await _userManager.UpdateSecurityStampAsync(user);
 
             user.ResetToken = null;
@@ -62,7 +55,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
 
             await _userManager.UpdateAsync(user);
 
-            return new ResetPasswordResponse { Success = true, Message = "Password changed successfully" };
+            return "Password changed successfully";
         }
     }
 }

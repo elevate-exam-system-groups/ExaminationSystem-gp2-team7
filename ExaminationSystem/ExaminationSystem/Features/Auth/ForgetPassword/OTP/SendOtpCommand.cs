@@ -1,12 +1,9 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
+using MediatR;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 {
-    public class SendOtpCommand: IRequest<string>
+    public record SendOtpCommand : IRequest<string>
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
+        public string Email { get; init; }
     }
 }

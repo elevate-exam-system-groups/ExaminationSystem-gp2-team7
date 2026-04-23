@@ -17,4 +17,10 @@ namespace ExaminationSystem.Common.Exceptions
     {
         public ConflictException(string message) : base(message) { }
     }
+
+    // بنرميها لما البيانات غلط في الـ Business Logic (مثلاً OTP غلط) → بتتحول لـ 400
+    public class BadRequestException : Exception
+    {
+        public BadRequestException(string message) : base(message) { }
+    }
 }

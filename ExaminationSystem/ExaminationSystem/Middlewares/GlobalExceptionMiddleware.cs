@@ -35,6 +35,11 @@ namespace ExaminationSystem.Middlewares
                 // فيه تعارض → 409
                 await WriteErrorResponse(context, HttpStatusCode.Conflict, ex.Message);
             }
+            catch (BadRequestException ex)
+            {
+                // بيانات غلط → 400
+                await WriteErrorResponse(context, HttpStatusCode.BadRequest, ex.Message);
+            }
             catch (Exception ex)
             {
                 // أي حاجة تانية غير متوقعة → 500
