@@ -9,7 +9,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults
 {
     [ApiController]
     [Route("api/attempts")]
-    [Authorize(Roles = "Student, Administrator")]
+    [Authorize(Roles = "Student, Admin")]
     public class GetAttemptResultsEndpoint : ApiControllerBase
     {
         private readonly IMediator _mediator;
@@ -22,7 +22,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults
         public async Task<IActionResult> GetResults(
             Guid attemptId, CancellationToken cancellationToken)
         {
-            var isAdmin = User.IsInRole("Administrator");
+            var isAdmin = User.IsInRole("Admin");
 
             var query = new GetAttemptResultsQuery(attemptId, UserId, isAdmin);
 

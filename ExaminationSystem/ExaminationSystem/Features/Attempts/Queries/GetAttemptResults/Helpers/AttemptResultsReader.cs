@@ -24,7 +24,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers
         public async Task<AttemptMeta?> GetAttemptMetaAsync(
             Guid attemptId, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.GetRepository<Attempt>().GetQueryable()
+            return await _unitOfWork.GetRepository<Attempt>().AsQueryable()
                 .Where(a => a.Id == attemptId)
                 .Select(a => new AttemptMeta
                 {
@@ -41,7 +41,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers
         public async Task<AttemptProjection> GetAttemptResultsAsync(
             Guid attemptId, CancellationToken cancellationToken)
         {
-            return (await _unitOfWork.GetRepository<Attempt>().GetQueryable()
+            return (await _unitOfWork.GetRepository<Attempt>().AsQueryable()
                 .Where(a => a.Id == attemptId)
                 .Select(a => new AttemptProjection
                 {
@@ -85,7 +85,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers
         private async Task<Dictionary<Guid, CorrectOptionProjection>> GetCorrectOptionsAsync(
             List<Guid> questionIds, CancellationToken cancellationToken)
         {
-            var options = await _unitOfWork.GetRepository<Option>().GetQueryable()
+            var options = await _unitOfWork.GetRepository<Option>().AsQueryable()
                 .Where(o => questionIds.Contains(o.MCQQuestionId) && o.IsCorrect)
                 .Select(o => new CorrectOptionProjection
                 {
@@ -105,7 +105,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers
         private async Task<Dictionary<Guid, bool>> GetTrueFalseAnswersAsync(
             List<Guid> questionIds, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.GetRepository<TrueFalseQuestion>().GetQueryable()
+            return await _unitOfWork.GetRepository<TrueFalseQuestion>().AsQueryable()
                 .Where(q => questionIds.Contains(q.Id))
                 .Select(q => new { q.Id, q.CorrectAnswer })
                 .AsNoTracking()

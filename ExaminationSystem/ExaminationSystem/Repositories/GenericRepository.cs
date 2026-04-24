@@ -1,30 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using E_Commerce.Domain.Contracts;
-using ExaminationSystem.Contracts;
+﻿using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Repositories
 {
-    public class GenericRepository<IEntity> : IGenericRepository<IEntity> where IEntity : BaseEntity
+    public class GenericRepository<IEntity>(ApplicationDbContext _dbContext) : IGenericRepository<IEntity> where IEntity : BaseEntity
     {
-        private readonly ApplicationDbContext _dbContext;
-        public GenericRepository(ApplicationDbContext dbContext)
+        public IQueryable<IEntity> AsQueryable()
         {
-            _dbContext = dbContext;
+          return  _dbContext.Set<IEntity>();
         }
-        public async Task AddAsync(IEntity entity)=> await _dbContext.Set<IEntity>().AddAsync(entity);
         public async Task<IEnumerable<IEntity>> GetAllAsync() => await _dbContext.Set<IEntity>().ToListAsync();
-        public async Task<IEntity?> GetByIdAsync(Guid id)=> await _dbContext.Set<IEntity>().FindAsync(id);
+        public async Task<IEntity?> GetByIdAsync(Guid id) => await _dbContext.Set<IEntity>().FindAsync(id);
 
-        public IQueryable<IEntity> GetQueryable() => _dbContext.Set<IEntity>();
+        public void Add(IEntity entity) => _dbContext.Set<IEntity>().Add(entity);
 
-        public void Remove(IEntity entity)=> _dbContext.Set<IEntity>().Remove(entity);
-        public void Update(IEntity entity)=> _dbContext.Set<IEntity>().Update(entity);
+        public void Update(IEntity entity) => _dbContext.Set<IEntity>().Update(entity);
+
+        public void SoftDelete(IEntity entity)
+        {
+            entity.DeletedAt = DateTime.UtcNow;
+        }
+        public void HardDelete(IEntity entity) => _dbContext.Set<IEntity>().Remove(entity);
+
     }
 }
