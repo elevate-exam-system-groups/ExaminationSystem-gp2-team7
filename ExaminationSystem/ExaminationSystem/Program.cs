@@ -1,7 +1,10 @@
 using System.Text;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
+using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
+using ExaminationSystem.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -72,8 +75,6 @@ namespace ExaminationSystem
             });
 
 
-
-
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
@@ -83,6 +84,8 @@ namespace ExaminationSystem
             // Email Service
             builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
 
+            // Unit of Work
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -119,6 +122,9 @@ namespace ExaminationSystem
                     }
                 });
             });
+
+            // Feature Readers
+            builder.Services.AddScoped<AttemptResultsReader>();
 
 
             var app = builder.Build();

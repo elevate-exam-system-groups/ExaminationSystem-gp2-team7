@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExaminationSystem.Models;
+﻿using ExaminationSystem.Models;
 
-namespace E_Commerce.Domain.Contracts
+namespace ExaminationSystem.Contracts
 {
     public interface IGenericRepository<IEntity> where IEntity : BaseEntity
     {
@@ -14,5 +9,6 @@ namespace E_Commerce.Domain.Contracts
         Task AddAsync(IEntity entity);
         void Update(IEntity entity);
         void Remove(IEntity entity);
+        IQueryable<IEntity> GetQueryable();
     }
 }
