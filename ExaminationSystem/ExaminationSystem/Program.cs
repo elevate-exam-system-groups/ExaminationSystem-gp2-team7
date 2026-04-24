@@ -1,13 +1,12 @@
 using System.Text;
+using E_Commerce.Domain.Contracts;
+using E_Commerce.Persistence.Repositories;
 using ExaminationSystem.DbContexts;
-using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -77,8 +76,11 @@ namespace ExaminationSystem
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+
             // In-Memory Caching
-            builder.Services.AddMemoryCache();
+            builder.Services.AddMemoryCache(); 
 
             // Email Service
             builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
