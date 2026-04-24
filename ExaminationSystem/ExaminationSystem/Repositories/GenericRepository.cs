@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using E_Commerce.Domain.Contracts;
+﻿using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace E_Commerce.Persistence.Repositories
+namespace ExaminationSystem.Repositories
 {
     public class GenericRepository<IEntity>(ApplicationDbContext _dbContext) : IGenericRepository<IEntity> where IEntity : BaseEntity
     {

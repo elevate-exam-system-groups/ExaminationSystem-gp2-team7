@@ -1,12 +1,10 @@
-﻿using System.Security.Claims;
-using E_Commerce.Domain.Contracts;
-using E_Commerce.Persistence.Repositories;
-using ExaminationSystem.DbContexts;
+﻿using ExaminationSystem.Contracts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
 
 namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas;
 
