@@ -9,7 +9,7 @@ namespace E_Commerce.Domain.Contracts
 {
     public interface IUnitOfWork
     {
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellation = default);
 
         IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
     }
