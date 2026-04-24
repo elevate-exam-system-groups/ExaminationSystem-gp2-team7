@@ -2,8 +2,6 @@ using System.Text;
 using E_Commerce.Domain.Contracts;
 using E_Commerce.Persistence.Repositories;
 using ExaminationSystem.DbContexts;
-using ExaminationSystem.DbContexts;
-using ExaminationSystem.Models;
 using ExaminationSystem.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +14,7 @@ namespace ExaminationSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +63,15 @@ namespace ExaminationSystem
 
             // MediatR
             builder.Services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+            {
+                cfg.RegisterServicesFromAssemblies(
+                    typeof(Program).Assembly,
+                    typeof(SeedIdentityHandler).Assembly
+                );
+            });
+
+
+
 
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -118,6 +124,14 @@ namespace ExaminationSystem
 
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                await mediator.Send(new SeedIdentityCommand());
+                
+            }
 
 
             // Configure the HTTP request pipeline.
