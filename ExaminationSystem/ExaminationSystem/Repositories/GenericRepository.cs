@@ -25,6 +25,8 @@ namespace ExaminationSystem.Repositories
         }
         public void HardDelete(IEntity entity) => _dbContext.Set<IEntity>().Remove(entity);
 
+        public void Attach(IEntity entity) => _dbContext.Set<IEntity>().Attach(entity);
+
         // Added for SubmitQuiz task
         public async Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate)
             => await _dbContext.Set<IEntity>().FirstOrDefaultAsync(predicate);

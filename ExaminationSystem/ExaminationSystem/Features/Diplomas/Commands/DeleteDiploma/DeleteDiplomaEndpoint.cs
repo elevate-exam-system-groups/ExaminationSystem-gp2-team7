@@ -9,7 +9,7 @@ namespace ExaminationSystem.Features.Diplomas.Commands.DeleteDiploma
     [Authorize(Roles = "Admin")]
     public class DeleteDiplomaEndpoint(IMediator _mediator) : ApiControllerBase
     {
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteDiploma/{id}")]
         public async Task<IActionResult> DeleteDiploma(Guid id)
         {
            var result = await _mediator.Send(new DeleteDiplomaCommand(id));

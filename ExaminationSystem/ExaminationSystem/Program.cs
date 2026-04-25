@@ -1,8 +1,10 @@
 using System.Text;
 using ExaminationSystem.Common;
+using ExaminationSystem.Common.Behaviors;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
+using ExaminationSystem.Features.Attempts.Services;
 using ExaminationSystem.Features.Attempts.SubmitQuiz;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
@@ -133,6 +135,10 @@ namespace ExaminationSystem
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.CreateQuestion.Helpers.CreateQuestionReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers.UpdateQuestionReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.DeleteQuestion.Helpers.DeleteQuestionReader>();
+
+            // Timer Enforcement
+            builder.Services.AddScoped<IAttemptAutoSubmitService, AttemptAutoSubmitService>();
+            builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AttemptDeadlineBehavior<,>));
 
 
             var app = builder.Build();

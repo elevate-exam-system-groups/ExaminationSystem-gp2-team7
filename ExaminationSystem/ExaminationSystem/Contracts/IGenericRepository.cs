@@ -12,6 +12,7 @@ namespace ExaminationSystem.Contracts
         void Update(IEntity entity);
         void SoftDelete(IEntity entity);
         void HardDelete(IEntity entity);
+        void Attach(IEntity entity);
 
         // Added for SubmitQuiz task
         Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate);
