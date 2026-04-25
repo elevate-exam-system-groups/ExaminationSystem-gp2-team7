@@ -2,6 +2,7 @@
 using ExaminationSystem.Common;
 using ExaminationSystem.Features.Auth.Login;
 using ExaminationSystem.Models;
+using ExaminationSystem.Models.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -40,6 +41,11 @@ namespace ExaminationSystem.Features.AdminDashboardStats
                 .Count(u => u.LastLoginDate.HasValue &&
                             u.LastLoginDate.Value.Date == today);
 
+            var attempts = await attemptsRepo.GetAllAsync();
+
+
+            var passedAttempts = attempts.Count(a => a.Status == AttemptStatus.IsPassed);
+            var avgPassRate = totalAttempts == 0 ? 0: (double)passedAttempts / totalAttempts * 100;
 
             var response = new AdminStatsResponse
             {
@@ -47,7 +53,7 @@ namespace ExaminationSystem.Features.AdminDashboardStats
                 ActiveUsersToday = activeUsersToday,
                 TotalQuizzes = totalQuizzes,
                 TotalAttempts = totalAttempts,
-                AvgPassRate = 0 // هنعملها بعدين
+                AvgPassRate = avgPassRate
             };
 
             return Result<AdminStatsResponse>.Success(response);

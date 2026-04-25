@@ -4,6 +4,7 @@ namespace ExaminationSystem.Models.Enums
     {
         InProgress,
         Submitted,
-        TimedOut
+        TimedOut ,
+        IsPassed
     }
 }
