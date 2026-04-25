@@ -14,5 +14,6 @@ namespace E_Commerce.Domain.Contracts
         Task AddAsync(IEntity entity);
         void Update(IEntity entity);
         void Remove(IEntity entity);
+        object GetByIdAsync(int question_id);
     }
 }

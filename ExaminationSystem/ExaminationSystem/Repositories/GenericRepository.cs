@@ -20,6 +20,12 @@ namespace E_Commerce.Persistence.Repositories
         public async Task AddAsync(IEntity entity)=> await _dbContext.Set<IEntity>().AddAsync(entity);
         public async Task<IEnumerable<IEntity>> GetAllAsync() => await _dbContext.Set<IEntity>().ToListAsync();
         public async Task<IEntity?> GetByIdAsync(Guid id)=> await _dbContext.Set<IEntity>().FindAsync(id);
+
+        public object GetByIdAsync(int question_id)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Remove(IEntity entity)=> _dbContext.Set<IEntity>().Remove(entity);
         public void Update(IEntity entity)=> _dbContext.Set<IEntity>().Update(entity);
     }

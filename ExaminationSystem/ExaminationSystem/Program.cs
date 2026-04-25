@@ -1,4 +1,6 @@
 using System.Text;
+using E_Commerce.Domain.Contracts;
+using E_Commerce.Persistence.Repositories;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
@@ -20,7 +22,7 @@ namespace ExaminationSystem
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             // 1️⃣ DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
