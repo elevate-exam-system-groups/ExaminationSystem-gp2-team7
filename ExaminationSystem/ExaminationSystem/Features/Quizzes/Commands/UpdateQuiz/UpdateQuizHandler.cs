@@ -1,45 +1,27 @@
 ﻿using ExaminationSystem.Common;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
+using ExaminationSystem.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
 {
-    public class UpdateQuizHandler : IRequestHandler<UpdateQuizCommand, Result<UpdateQuizResponse>>
+    public class UpdateQuizHandler(IUnitOfWork unitOfWork, UpdateQuizValidator validator) 
+        : IRequestHandler<UpdateQuizCommand, Result<UpdateQuizResponse>>
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly UpdateQuizValidator _validator;
-        public UpdateQuizHandler(
-            ApplicationDbContext dbContext, UpdateQuizValidator validator)
-        {
-            _dbContext = dbContext;
-            _validator = validator;
-        }
         public async Task<Result<UpdateQuizResponse>> Handle(UpdateQuizCommand command, CancellationToken cancellationToken)
         {
-            // Validation
-
-            var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-
-            if (!validationResult.IsValid) { 
-                var errors = string.Join(" | ", validationResult.Errors);
-                return Result<UpdateQuizResponse>.Failure(
-                    errors, StatusCodes.Status422UnprocessableEntity);
-            };
-
-
-            // Verify Quiz exists
-            var quiz = await _dbContext.Quizzes.FirstOrDefaultAsync(
-                q => q.Id == command.QuizId, cancellationToken);
-
-            if (quiz == null) { 
-                return Result<UpdateQuizResponse>.Failure(
-                    "Quiz not found.", StatusCodes.Status404NotFound);            
+            var validationResult = await ValidateUpdateQuizCommand(
+                command, cancellationToken);
+            if (validationResult.error is not null)
+            {
+                return validationResult.error;
             }
-                   
 
+            var quiz = validationResult.quiz;
             // Update Quiz
-            quiz.Title = command.Title;
+            quiz!.Title = command.Title;
             quiz.DurationMinutes = command.DurationMinutes;
             quiz.PassScore = command.PassScore ?? 60m;
             quiz.Instructions = command.Instructions;
@@ -47,7 +29,7 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
             quiz.UpdatedBy = command.AdminId;
 
             // Save changes
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
             // Map response
             var response = new UpdateQuizResponse
@@ -64,6 +46,33 @@ namespace ExaminationSystem.Features.Quizzes.Commands.UpdateQuiz
 
             return Result<UpdateQuizResponse>.Success(response, StatusCodes.Status200OK);
 
+        }
+
+        private async Task<(Result<UpdateQuizResponse>? error, Quiz? quiz)> ValidateUpdateQuizCommand(
+            UpdateQuizCommand command, CancellationToken cancellationToken)
+        {
+            // Validation
+
+            var validationResult = await validator.ValidateAsync(command, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = string.Join(" | ", validationResult.Errors);
+                return (Result<UpdateQuizResponse>.Failure(
+                    errors, StatusCodes.Status422UnprocessableEntity), null);
+            };
+
+
+            // Verify Quiz exists
+            var quiz = await unitOfWork.GetRepository<Quiz>().AsQueryable()
+                .FirstOrDefaultAsync(q => q.Id == command.QuizId, cancellationToken);
+            if (quiz == null)
+            {
+                return (Result<UpdateQuizResponse>.Failure(
+                    "Quiz not found.", StatusCodes.Status404NotFound), null);
+            }
+
+            return (null, quiz);
         }
     }
 }

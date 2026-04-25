@@ -5,6 +5,7 @@ using ExaminationSystem.Features.Attempts.Services;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using ExaminationSystem.Repositories;
+using ExaminationSystem.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -142,6 +143,9 @@ namespace ExaminationSystem
                 await mediator.Send(new SeedIdentityCommand());
                 
             }
+
+            // Seed mock data for testing
+            await DataSeeder.SeedMockDataAsync(app.Services);
 
 
             // Configure the HTTP request pipeline.
