@@ -33,7 +33,7 @@ namespace ExaminationSystem.Features.Auth.Register
         }
         public async Task<Result<RegisterResponse>> Handle(SeedIdentityCommand request, CancellationToken cancellationToken)
         {
-            // 1. Seed Roles
+            //1.Seed Roles
             string[] roles = { "Admin", "Student" };
 
             foreach (var role in roles)
