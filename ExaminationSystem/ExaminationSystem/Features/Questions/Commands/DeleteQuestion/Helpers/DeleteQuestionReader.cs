@@ -50,11 +50,11 @@ namespace ExaminationSystem.Features.Questions.Commands.DeleteQuestion.Helpers
         public async Task SoftDeleteOptionsAsync(
             Guid questionId, CancellationToken cancellationToken)
         {
-            var options = await _unitOfWork.GetRepository<Option>().AsQueryable()
+            var options = await _unitOfWork.GetRepository<QuestionOption>().AsQueryable()
                 .Where(o => o.MCQQuestionId == questionId)
                 .ToListAsync(cancellationToken);
 
-            var optionRepo = _unitOfWork.GetRepository<Option>();
+            var optionRepo = _unitOfWork.GetRepository<QuestionOption>();
             foreach (var option in options)
                 optionRepo.SoftDelete(option);
         }

@@ -29,10 +29,10 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers
         /// <summary>
         /// جيب الـ Options القديمة بتاعت السؤال
         /// </summary>
-        public async Task<List<Option>> GetOptionsByQuestionIdAsync(
+        public async Task<List<QuestionOption>> GetOptionsByQuestionIdAsync(
             Guid questionId, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.GetRepository<Option>().AsQueryable()
+            return await _unitOfWork.GetRepository<QuestionOption>().AsQueryable()
                 .Where(o => o.MCQQuestionId == questionId)
                 .ToListAsync(cancellationToken);
         }
@@ -40,9 +40,9 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers
         /// <summary>
         /// امسح الـ Options القديمة
         /// </summary>
-        public void RemoveOptions(List<Option> options)
+        public void RemoveOptions(List<QuestionOption> options)
         {
-            var optionRepo = _unitOfWork.GetRepository<Option>();
+            var optionRepo = _unitOfWork.GetRepository<QuestionOption>();
             foreach (var option in options)
                 optionRepo.HardDelete(option);
         }

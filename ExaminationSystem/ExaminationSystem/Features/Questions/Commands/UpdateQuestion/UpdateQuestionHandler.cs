@@ -44,7 +44,7 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
             for (int i = 0; i < request.Options.Count; i++)
             {
                 var optionDto = request.Options[i];
-                question.Options.Add(new Option
+                question.Options.Add(new QuestionOption
                 {
                     OptionText = optionDto.Text,
                     IsCorrect = optionDto.IsCorrect,
