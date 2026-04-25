@@ -19,52 +19,29 @@ namespace ExaminationSystem.Features.Auth
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(SendOtpCommand command)
         {
-            try
-            {
-                var result = await _mediator.Send(command);
-                return Ok(new { message = result });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _mediator.Send(command);
+            return Ok(new { message = result });
         }
 
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp(VerifyOtpCommand command)
         {
-            try
-            {
-                var result = await _mediator.Send(command);
-                return Ok(new { resetToken = result });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _mediator.Send(command);
+            return Ok(new { resetToken = result });
         }
 
         [HttpPost("resend-otp")]
         public async Task<IActionResult> ResendOtp(ResendOtpCommand command)
         {
-            try
-            {
-                var result = await _mediator.Send(command);
-                return Ok(new { message = result });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _mediator.Send(command);
+            return Ok(new { message = result });
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
         {
             var result = await _mediator.Send(command);
-            if (!result.Success)
-                return BadRequest(new { message = result.Message });
-            return Ok(new { message = result.Message });
+            return Ok(new { message = result });
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Text;
+using ExaminationSystem.Common;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
@@ -71,8 +72,8 @@ namespace ExaminationSystem
                     typeof(Program).Assembly,
                     typeof(SeedIdentityHandler).Assembly
                 );
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             });
-
 
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -84,7 +85,7 @@ namespace ExaminationSystem
             builder.Services.AddMemoryCache(); 
 
             // Email Service
-            builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
+            builder.Services.AddScoped<IEmailService, ExaminationSystem.Repositories.EmailService>();
 
             // Unit of Work
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -117,10 +118,10 @@ namespace ExaminationSystem
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer" // ⚠️ CRITICAL: This ID must strictly match the name defined in AddSecurityDefinition above
+                                Id = "Bearer"
                             }
                         },
-                        Array.Empty<string>() // An empty array means this authentication requirement applies globally to all endpoints
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -149,6 +150,9 @@ namespace ExaminationSystem
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Global Error Handling
+            app.UseMiddleware<ExaminationSystem.Middlewares.GlobalExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 
