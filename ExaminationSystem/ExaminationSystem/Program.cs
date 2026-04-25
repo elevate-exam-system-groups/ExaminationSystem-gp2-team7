@@ -2,6 +2,7 @@ using System.Text;
 using ExaminationSystem.Common;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Auth.Register;
+using ExaminationSystem.Features.Attempts.SubmitQuiz;
 using ExaminationSystem.Models;
 using FluentValidation;
 using MediatR;
@@ -128,9 +129,12 @@ namespace ExaminationSystem
             using (var scope = app.Services.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
                 await mediator.Send(new SeedIdentityCommand());
-                
+
+                // Seed بيانات تجريبية لتاسك Submit Quiz
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await SeedSubmitQuizData.SeedAsync(userManager, dbContext);
             }
 
 
@@ -140,9 +144,6 @@ namespace ExaminationSystem
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            // Global Error Handling
-            app.UseMiddleware<ExaminationSystem.Middlewares.GlobalExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

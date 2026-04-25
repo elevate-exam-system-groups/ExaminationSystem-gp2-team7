@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ExaminationSystem.Features.Attempts.SubmitQuiz
 {
-    public record SubmitQuizCommand : IRequest<SubmitQuizResponse>
+    public record SubmitQuizCommand : IRequest<Result<SubmitQuizResponse>>
     {
         public Guid AttemptId { get; init; }
 

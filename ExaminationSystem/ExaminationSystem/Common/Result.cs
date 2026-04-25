@@ -1,6 +1,3 @@
-﻿using ExaminationSystem.Features.Auth.Login;
-using Microsoft.OpenApi.Any;
-
 namespace ExaminationSystem.Common
 {
     public class Result<T>
@@ -24,6 +21,8 @@ namespace ExaminationSystem.Common
         public static Result<T> Failure(string error, int statusCode = StatusCodes.Status400BadRequest)
             => new(false, default, error, statusCode);
 
-        
+        // Overload عشان نرجع data مع الـ error (زي حالة 409 Conflict)
+        public static Result<T> Failure(string error, int statusCode, T data)
+            => new(false, data, error, statusCode);
     }
 }

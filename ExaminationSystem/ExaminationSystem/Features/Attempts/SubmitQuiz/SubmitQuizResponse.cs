@@ -1,4 +1,4 @@
-﻿namespace ExaminationSystem.Features.Attempts.SubmitQuiz
+namespace ExaminationSystem.Features.Attempts.SubmitQuiz
 {
     public class SubmitQuizResponse
     {

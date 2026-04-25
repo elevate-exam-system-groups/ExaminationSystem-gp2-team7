@@ -7,7 +7,7 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
 {
     [ApiController]
     [Route("api/attempts")]
-    [Authorize]
+    [Authorize(Roles = "Student")]
     public class SubmitQuizEndpoint : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,22 +20,28 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
         [HttpPost("{attemptId:guid}/submit")]
         public async Task<IActionResult> Submit(Guid attemptId, CancellationToken cancellationToken)
         {
-           
             var studentIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(studentIdClaim, out var studentId))
                 return Unauthorized(new { message = "Invalid or missing student identity." });
 
-            
             var command = new SubmitQuizCommand
             {
                 AttemptId = attemptId,
                 StudentId = studentId
             };
 
-           
             var result = await _mediator.Send(command, cancellationToken);
 
-            return Ok(result);
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, new
+                {
+                    error = result.Error,
+                    data = result.Data
+                });
+            }
+
+            return Ok(result.Data);
         }
     }
 }

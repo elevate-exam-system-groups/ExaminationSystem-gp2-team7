@@ -1,4 +1,4 @@
-using ExaminationSystem.Common.Exceptions;
+using ExaminationSystem.Common;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Services;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 {
-    public class ResendOtpHandler : IRequestHandler<ResendOtpCommand, string>
+    public class ResendOtpHandler : IRequestHandler<ResendOtpCommand, Result<string>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
@@ -20,7 +20,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
             _emailService = emailService;
         }
 
-        public async Task<string> Handle(ResendOtpCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(ResendOtpCommand request, CancellationToken cancellationToken)
         {
             // FluentValidation بيتكفل بالـ validation بتاع Email
 
@@ -28,7 +28,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 
             // لو اليوزر مش موجود → نرجع نفس الرسالة (عشان الأمان)
             if (user == null)
-                return "Verification code has been sent to your email";
+                return Result<string>.Success("Verification code has been sent to your email");
 
             // شيك حد الإرسال
             if (user.OtpResendWindowStart != null)
@@ -36,7 +36,9 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
                 if (user.OtpResendWindowStart > DateTime.UtcNow.AddHours(-1))
                 {
                     if (user.OtpResendCount >= 3)
-                        throw new ForbiddenException("Resend limit reached. Try again after 1 hour.");
+                        return Result<string>.Failure(
+                            "Resend limit reached. Try again after 1 hour.",
+                            StatusCodes.Status403Forbidden);
                 }
                 else
                 {
@@ -68,7 +70,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
                 $"<h2>Your new verification code: {otp}</h2><p>Valid for 10 minutes</p>"
             );
 
-            return "Verification code has been sent to your email";
+            return Result<string>.Success("Verification code has been sent to your email");
         }
     }
 }
