@@ -25,7 +25,7 @@ namespace ExaminationSystem.DbContexts
         public DbSet<Question> Questions { get; set; }
         public DbSet<MultipleChoiceQuestion> MultipleChoiceQuestions { get; set; }
         public DbSet<TrueFalseQuestion> TrueFalseQuestions { get; set; }
-        public DbSet<Option> Options { get; set; }
+        public DbSet<QuestionOption> Options { get; set; }
         public DbSet<Attempt> Attempts { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
@@ -50,7 +50,7 @@ namespace ExaminationSystem.DbContexts
             modelBuilder.Entity<StudentDiploma>().Ignore(sd => sd.IsDeleted);
             modelBuilder.Entity<Quiz>().Ignore(q => q.IsDeleted);
             modelBuilder.Entity<Question>().Ignore(q => q.IsDeleted);
-            modelBuilder.Entity<Option>().Ignore(o => o.IsDeleted);
+            modelBuilder.Entity<QuestionOption>().Ignore(o => o.IsDeleted);
             modelBuilder.Entity<Attempt>().Ignore(a => a.IsDeleted);
             modelBuilder.Entity<Answer>().Ignore(a => a.IsDeleted);
 

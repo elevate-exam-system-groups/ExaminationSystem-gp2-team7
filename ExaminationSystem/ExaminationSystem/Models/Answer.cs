@@ -27,7 +27,7 @@ namespace ExaminationSystem.Models
         #region Selected Option Relationship
         public Guid? SelectedOptionId { get; set; }
         [ForeignKey(nameof(SelectedOptionId))]
-        public virtual Option SelectedOption { get; set; }
+        public virtual QuestionOption SelectedOption { get; set; }
         #endregion
     }
 }
