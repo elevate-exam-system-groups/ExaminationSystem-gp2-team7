@@ -2,7 +2,8 @@ namespace ExaminationSystem.Models.Enums
 {
     public enum QuizStatus
     {
-        Draft,
-        Published
+        Draft = 0 ,
+        Published = 1 ,
+        Unpublished = 2 ,
     }
 }

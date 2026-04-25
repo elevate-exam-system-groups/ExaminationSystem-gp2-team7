@@ -9,8 +9,6 @@ namespace ExaminationSystem.Contracts
         Task<IEntity?> GetByIdAsync(Guid id);
         void Add(IEntity entity);
         void Update(IEntity entity);
-        void SoftDelete(IEntity entity);
-        void HardDelete(IEntity entity);
-        void Attach(IEntity entity);
+        void Remove(IEntity entity);
     }
 }
