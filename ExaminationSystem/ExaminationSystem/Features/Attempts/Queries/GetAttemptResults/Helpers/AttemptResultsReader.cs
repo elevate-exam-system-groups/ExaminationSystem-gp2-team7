@@ -1,6 +1,5 @@
 ﻿using ExaminationSystem.Contracts;
 using ExaminationSystem.Models;
-using ExaminationSystem.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers

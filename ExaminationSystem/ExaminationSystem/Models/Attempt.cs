@@ -12,6 +12,8 @@ namespace ExaminationSystem.Models
 
         public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
+        public DateTime Deadline { get; set; }
+
         public DateTime? SubmittedAt { get; set; }
 
         public decimal? Score { get; set; }

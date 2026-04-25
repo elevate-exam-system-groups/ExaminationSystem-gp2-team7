@@ -1,7 +1,9 @@
 using System.Text;
+using ExaminationSystem.Common.Behaviors;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
+using ExaminationSystem.Features.Attempts.Services;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using ExaminationSystem.Repositories;
@@ -127,6 +129,10 @@ namespace ExaminationSystem
 
             // Feature Readers
             builder.Services.AddScoped<AttemptResultsReader>();
+
+            // Timer Enforcement
+            builder.Services.AddScoped<IAttemptAutoSubmitService, AttemptAutoSubmitService>();
+            builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AttemptDeadlineBehavior<,>));
 
 
             var app = builder.Build();

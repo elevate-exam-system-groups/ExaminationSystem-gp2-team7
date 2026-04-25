@@ -11,5 +11,6 @@ namespace ExaminationSystem.Contracts
         void Update(IEntity entity);
         void SoftDelete(IEntity entity);
         void HardDelete(IEntity entity);
+        void Attach(IEntity entity);
     }
 }

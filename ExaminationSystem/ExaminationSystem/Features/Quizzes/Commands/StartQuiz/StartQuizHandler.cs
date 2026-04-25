@@ -1,4 +1,5 @@
 ﻿using ExaminationSystem.Common;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
@@ -7,15 +8,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Quizzes.Commands.StartQuiz
 {
-    public class StartQuizHandler : IRequestHandler<StartQuizCommand, Result<StartQuizResponse>>
+    public class StartQuizHandler(IUnitOfWork unitOfWork) : IRequestHandler<StartQuizCommand, Result<StartQuizResponse>>
     {
-        private readonly ApplicationDbContext _dbContext;
-        public StartQuizHandler(ApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
         public async Task<Result<StartQuizResponse>> Handle(StartQuizCommand command, CancellationToken cancellationToken)
         {
+            // Fetch the Quiz FIRST (To validate it exists and get duration/info)
+            var quiz = await unitOfWork.GetRepository<Quiz>().AsQueryable()
+                .Select(q => new { q.Id, q.Title, q.DurationMinutes, q.PassScore, q.Instructions })
+                .FirstOrDefaultAsync(q => q.Id == command.QuizId, cancellationToken);
+
+            if (quiz == null)
+            {
+                return Result<StartQuizResponse>.Failure(
+                    "Quiz not found.", StatusCodes.Status404NotFound);
+            }
+
             // Create the attempt
             var attempt = new Attempt
             {
@@ -24,21 +31,21 @@ namespace ExaminationSystem.Features.Quizzes.Commands.StartQuiz
                 StudentId = command.StudentId,
                 Status = AttemptStatus.InProgress,
                 StartTime = DateTime.UtcNow,
+                Deadline = DateTime.UtcNow.AddMinutes(quiz.DurationMinutes),
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = command.StudentId,
-
+                CreatedBy = command.StudentId
             };
 
-            _dbContext.Add(attempt);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            unitOfWork.GetRepository<Attempt>().Add(attempt);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
             var quizInfo = new QuizInfoDto
             {
-                Id = attempt.QuizId,
-                Title = attempt.Quiz.Title,
-                DurationMinutes = attempt.Quiz.DurationMinutes,
-                PassScore = attempt.Quiz.PassScore,
-                Instructions = attempt.Quiz.Instructions
+                Id = quiz.Id,
+                Title = quiz.Title,
+                DurationMinutes = quiz.DurationMinutes,
+                PassScore = quiz.PassScore,
+                Instructions = quiz.Instructions
             };
 
             // Load questions ordered by OrderIndex
@@ -58,7 +65,7 @@ namespace ExaminationSystem.Features.Quizzes.Commands.StartQuiz
         private async Task<List<QuestionDto>> LoadQuestionsAsync(Attempt attempt, CancellationToken cancellationToken)
         {
             // Load MCQ questions with their options(no IsCorrect)
-            var mcQuestions = await _dbContext.MultipleChoiceQuestions
+            var mcQuestions = await unitOfWork.GetRepository<MultipleChoiceQuestion>().AsQueryable()
                 .Where(q => q.QuizId == attempt.QuizId)
                 .OrderBy(q => q.OrderIndex)
                 .Select(q => new QuestionDto
@@ -75,11 +82,10 @@ namespace ExaminationSystem.Features.Quizzes.Commands.StartQuiz
                             OrderIndex = o.OrderIndex
                         }).ToList()
                 })
-                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             // Load TrueFalse questions (no options)
-            var tfQuestions = await _dbContext.TrueFalseQuestions
+            var tfQuestions = await unitOfWork.GetRepository<TrueFalseQuestion>().AsQueryable()
                 .Where(q => q.QuizId == attempt.QuizId)
                 .OrderBy(q => q.OrderIndex)
                 .Select(q => new QuestionDto
@@ -90,7 +96,6 @@ namespace ExaminationSystem.Features.Quizzes.Commands.StartQuiz
                     OrderIndex = q.OrderIndex,
                     Options = null
                 })
-                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             //  Combine both lists
