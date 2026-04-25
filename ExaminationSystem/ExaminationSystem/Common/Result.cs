@@ -1,5 +1,5 @@
-﻿using ExaminationSystem.Features.Auth.Login;
-using Microsoft.OpenApi.Any;
+﻿
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExaminationSystem.Common
 {
@@ -24,6 +24,18 @@ namespace ExaminationSystem.Common
         public static Result<T> Failure(string error, int statusCode = StatusCodes.Status400BadRequest)
             => new(false, default, error, statusCode);
 
-        
+        public static Result<T> Created(T data, int statusCode = StatusCodes.Status201Created)
+            => new(true, data, null, statusCode);
+
+        public static Result<T> NotFound(string message, int statusCode = StatusCodes.Status404NotFound)
+            => new(false, default, message, statusCode);
+
+        public static Result<T> Conflict(string message, int statusCode = StatusCodes.Status409Conflict)
+            => new(false, default, message, statusCode);
+
+        public static Result<T> Unauthorized(string message, int statusCode = StatusCodes.Status401Unauthorized)
+           => new(false, default, message, statusCode);
+
+
     }
 }
