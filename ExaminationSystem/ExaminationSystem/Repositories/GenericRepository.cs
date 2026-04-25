@@ -24,5 +24,6 @@ namespace ExaminationSystem.Repositories
         }
         public void HardDelete(IEntity entity) => _dbContext.Set<IEntity>().Remove(entity);
 
+        public void Attach(IEntity entity) => _dbContext.Set<IEntity>().Attach(entity);
     }
 }
