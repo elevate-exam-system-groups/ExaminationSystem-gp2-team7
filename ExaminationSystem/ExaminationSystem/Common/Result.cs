@@ -1,7 +1,4 @@
-﻿using ExaminationSystem.Features.Auth.Login;
-using Microsoft.OpenApi.Any;
-
-namespace ExaminationSystem.Common
+﻿namespace ExaminationSystem.Common
 {
     public class Result<T>
     {
