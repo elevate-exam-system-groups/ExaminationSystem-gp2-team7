@@ -127,6 +127,9 @@ namespace ExaminationSystem
 
             // Feature Readers
             builder.Services.AddScoped<AttemptResultsReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.CreateQuestion.Helpers.CreateQuestionReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers.UpdateQuestionReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.DeleteQuestion.Helpers.DeleteQuestionReader>();
 
 
             var app = builder.Build();
