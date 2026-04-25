@@ -3,6 +3,7 @@ using ExaminationSystem.Common;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
+using ExaminationSystem.Features.Attempts.SubmitQuiz;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using ExaminationSystem.Repositories;
@@ -128,6 +129,7 @@ namespace ExaminationSystem
 
             // Feature Readers
             builder.Services.AddScoped<AttemptResultsReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Attempts.SubmitQuiz.Helpers.SubmitQuizReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.CreateQuestion.Helpers.CreateQuestionReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers.UpdateQuestionReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.DeleteQuestion.Helpers.DeleteQuestionReader>();
@@ -138,9 +140,12 @@ namespace ExaminationSystem
             using (var scope = app.Services.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
                 await mediator.Send(new SeedIdentityCommand());
-                
+
+                // Seed بيانات تجريبية لتاسك Submit Quiz
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await SeedSubmitQuizData.SeedAsync(userManager, dbContext);
             }
 
 

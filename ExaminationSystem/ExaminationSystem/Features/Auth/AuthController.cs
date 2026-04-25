@@ -20,28 +20,36 @@ namespace ExaminationSystem.Features.Auth
         public async Task<IActionResult> ForgotPassword(SendOtpCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(new { message = result });
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new { error = result.Error });
+            return Ok(new { message = result.Data });
         }
 
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp(VerifyOtpCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(new { resetToken = result });
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new { error = result.Error });
+            return Ok(new { resetToken = result.Data });
         }
 
         [HttpPost("resend-otp")]
         public async Task<IActionResult> ResendOtp(ResendOtpCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(new { message = result });
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new { error = result.Error });
+            return Ok(new { message = result.Data });
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(new { message = result });
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new { error = result.Error });
+            return Ok(new { message = result.Data });
         }
     }
 }

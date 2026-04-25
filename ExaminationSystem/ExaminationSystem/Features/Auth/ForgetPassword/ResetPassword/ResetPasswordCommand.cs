@@ -1,8 +1,9 @@
+using ExaminationSystem.Common;
 using MediatR;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
 {
-    public record ResetPasswordCommand : IRequest<string>
+    public record ResetPasswordCommand : IRequest<Result<string>>
     {
         public string Email { get; init; }
         public string ResetToken { get; init; }

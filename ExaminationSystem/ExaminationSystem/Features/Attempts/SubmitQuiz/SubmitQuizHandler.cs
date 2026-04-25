@@ -1,76 +1,75 @@
-using ExaminationSystem.Common.Exceptions;
-using ExaminationSystem.Models;
+using ExaminationSystem.Common;
+using ExaminationSystem.Features.Attempts.SubmitQuiz.Helpers;
 using ExaminationSystem.Models.Enums;
-using ExaminationSystem.Contracts;
 using MediatR;
 
 namespace ExaminationSystem.Features.Attempts.SubmitQuiz
 {
-    public class SubmitQuizHandler : IRequestHandler<SubmitQuizCommand, SubmitQuizResponse>
+    /// <summary>
+    /// Orchestrator: coordinates validation, business logic, and persistence.
+    /// All DB operations are delegated to SubmitQuizReader.
+    /// </summary>
+    public class SubmitQuizHandler : IRequestHandler<SubmitQuizCommand, Result<SubmitQuizResponse>>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly SubmitQuizReader _reader;
 
-        public SubmitQuizHandler(IUnitOfWork unitOfWork)
+        public SubmitQuizHandler(SubmitQuizReader reader)
         {
-            _unitOfWork = unitOfWork;
+            _reader = reader;
         }
 
-        public async Task<SubmitQuizResponse> Handle(
+        public async Task<Result<SubmitQuizResponse>> Handle(
             SubmitQuizCommand request, CancellationToken cancellationToken)
         {
-           
-            var attemptRepo = _unitOfWork.GetRepository<Attempt>();
-            var quizRepo = _unitOfWork.GetRepository<Quiz>();
-            var questionRepo = _unitOfWork.GetRepository<Question>();
-            var answerRepo = _unitOfWork.GetRepository<Answer>();
+            // 1. جيب المحاولة
+            var attempt = await _reader.GetAttemptAsync(request.AttemptId, cancellationToken);
 
-            
-            var attempt = await attemptRepo.GetByIdAsync(request.AttemptId);
             if (attempt == null)
-                throw new NotFoundException("Attempt not found.");
+                return Result<SubmitQuizResponse>.Failure(
+                    "Attempt not found.", StatusCodes.Status404NotFound);
 
-           
+            // 2. تأكد إن الطالب هو صاحب المحاولة
             if (attempt.StudentId != request.StudentId)
-                throw new ForbiddenException("You are not the owner of this attempt.");
+                return Result<SubmitQuizResponse>.Failure(
+                    "You are not the owner of this attempt.", StatusCodes.Status403Forbidden);
 
-           
+            // 3. لو المحاولة اتسلمت قبل كده → ارجع النتيجة القديمة مع 409
             if (attempt.Status != AttemptStatus.InProgress)
-                throw new ConflictException("This attempt has already been submitted.");
+                return Result<SubmitQuizResponse>.Failure(
+                    "This attempt has already been submitted.",
+                    StatusCodes.Status409Conflict,
+                    new SubmitQuizResponse
+                    {
+                        AttemptId = attempt.Id,
+                        Score = attempt.Score ?? 0,
+                        IsPassed = attempt.Passed ?? false,
+                        Status = attempt.Status.ToString()
+                    });
 
-            
-            var quiz = await quizRepo.GetByIdAsync(attempt.QuizId);
+            // 4. جيب الكويز
+            var quiz = await _reader.GetQuizAsync(attempt.QuizId, cancellationToken);
 
-            
+            // 5. احسب لو الوقت خلص
             var deadline = attempt.StartTime.AddMinutes(quiz.DurationMinutes);
             var isTimedOut = DateTime.UtcNow > deadline;
             var newStatus = isTimedOut ? AttemptStatus.TimedOut : AttemptStatus.Submitted;
 
-            var totalQuestions = await questionRepo.CountAsync(q => q.QuizId == quiz.Id);
+            // 6. عدد الأسئلة الكلي
+            var totalQuestions = await _reader.CountQuestionsAsync(quiz.Id, cancellationToken);
 
-            int correctAnswers;
-            if (isTimedOut)
-            {
-               
-                correctAnswers = await answerRepo.CountAsync(a =>
-                    a.AttemptId == attempt.Id
-                    && a.IsCorrect
-                    && a.SubmittedAt <= deadline);
-            }
-            else
-            {
-              
-                correctAnswers = await answerRepo.CountAsync(a =>
-                    a.AttemptId == attempt.Id
-                    && a.IsCorrect);
-            }
+            // 7. عدد الإجابات الصح
+            var correctAnswers = isTimedOut
+                ? await _reader.CountCorrectAnswersBeforeDeadlineAsync(attempt.Id, deadline, cancellationToken)
+                : await _reader.CountCorrectAnswersAsync(attempt.Id, cancellationToken);
 
+            // 8. احسب الدرجة
             var score = totalQuestions > 0
                 ? (decimal)correctAnswers / totalQuestions * 100
                 : 0;
 
             var passed = score >= quiz.PassScore;
 
-            
+            // 9. حدّث المحاولة
             attempt.Status = newStatus;
             attempt.SubmittedAt = DateTime.UtcNow;
             attempt.Score = score;
@@ -78,19 +77,16 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
             attempt.CorrectAnswers = correctAnswers;
             attempt.Passed = passed;
 
-            attemptRepo.Update(attempt);
-            await _unitOfWork.SaveChangesAsync();
+            await _reader.SaveChangesAsync(cancellationToken);
 
-           
-            var response = new SubmitQuizResponse
+            // 10. رجّع النتيجة
+            return Result<SubmitQuizResponse>.Success(new SubmitQuizResponse
             {
                 AttemptId = attempt.Id,
                 Score = score,
                 IsPassed = passed,
                 Status = newStatus.ToString()
-            };
-
-            return response;
+            });
         }
     }
 }

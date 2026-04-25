@@ -1,4 +1,4 @@
-using ExaminationSystem.Common.Exceptions;
+using ExaminationSystem.Common;
 using ExaminationSystem.Models;
 using ExaminationSystem.Services;
 using MediatR;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 {
-    public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, string>
+    public class VerifyOtpHandler : IRequestHandler<VerifyOtpCommand, Result<string>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -15,21 +15,22 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
             _userManager = userManager;
         }
 
-        public async Task<string> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
         {
             // FluentValidation بيتكفل بالـ validation بتاع Email و OTP
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                throw new BadRequestException("Invalid email or OTP.");
+                return Result<string>.Failure("Invalid email or OTP.");
 
             // لو الأكاونت متقفل
             if (user.EmailOtpLockedUntil != null && user.EmailOtpLockedUntil > DateTime.UtcNow)
-                throw new ForbiddenException("Account is locked. Try again later.");
+                return Result<string>.Failure(
+                    "Account is locked. Try again later.", StatusCodes.Status403Forbidden);
 
             // لو الـ OTP انتهى
             if (user.EmailOtpExpiresAt == null || user.EmailOtpExpiresAt < DateTime.UtcNow)
-                throw new BadRequestException("OTP has expired.");
+                return Result<string>.Failure("OTP has expired.");
 
             // لو الـ OTP غلط
             var hashedOtp = OtpHelper.HashOtp(request.Otp);
@@ -39,7 +40,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
                 if (user.EmailOtpAttempts >= 5)
                     user.EmailOtpLockedUntil = DateTime.UtcNow.AddMinutes(15);
                 await _userManager.UpdateAsync(user);
-                throw new BadRequestException("Invalid OTP.");
+                return Result<string>.Failure("Invalid OTP.");
             }
 
             // OTP صح → اعمل Reset Token
@@ -55,7 +56,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 
             await _userManager.UpdateAsync(user);
 
-            return resetToken;
+            return Result<string>.Success(resetToken);
         }
     }
 }

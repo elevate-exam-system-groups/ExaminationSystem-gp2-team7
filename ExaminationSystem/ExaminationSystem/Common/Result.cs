@@ -1,7 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-
-namespace ExaminationSystem.Common
+﻿namespace ExaminationSystem.Common
 {
     public class Result<T>
     {
@@ -36,6 +33,8 @@ namespace ExaminationSystem.Common
         public static Result<T> Unauthorized(string message, int statusCode = StatusCodes.Status401Unauthorized)
            => new(false, default, message, statusCode);
 
-
+        // Overload عشان نرجع data مع الـ error (زي حالة 409 Conflict)
+        public static Result<T> Failure(string error, int statusCode, T data)
+            => new(false, data, error, statusCode);
     }
 }
