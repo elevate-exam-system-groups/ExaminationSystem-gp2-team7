@@ -11,7 +11,7 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas
 {
     [ApiController]
     [Route("api/diplomas")]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Student")]
     public class GetAllDiplomasEndpoint(IMediator _mediator) : ControllerBase
     {
         [HttpGet]
