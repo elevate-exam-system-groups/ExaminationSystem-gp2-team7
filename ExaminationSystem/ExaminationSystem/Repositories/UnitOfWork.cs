@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExaminationSystem.Contracts;
-
+﻿using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 
@@ -21,11 +15,11 @@ namespace ExaminationSystem.Repositories
         }
         public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
         {
-            var EntityType = typeof(TEntity); 
-            if(_repositories.TryGetValue(EntityType,out object? repository))
+            var EntityType = typeof(TEntity);
+            if (_repositories.TryGetValue(EntityType, out object? repository))
                 return (IGenericRepository<TEntity>)repository;
 
-            var newRepo = new GenericRepository<TEntity>(_dbContext); 
+            var newRepo = new GenericRepository<TEntity>(_dbContext);
 
             _repositories[EntityType] = newRepo;
             return newRepo;
@@ -33,6 +27,7 @@ namespace ExaminationSystem.Repositories
         }
 
 
-        public async Task<int> SaveChangesAsync() => await _dbContext.SaveChangesAsync();
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+            => await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

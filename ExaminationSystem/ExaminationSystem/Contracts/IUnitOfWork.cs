@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExaminationSystem.Models;
+﻿using ExaminationSystem.Models;
 
 namespace ExaminationSystem.Contracts
 {
     public interface IUnitOfWork
     {
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellation = default);
 
         IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
     }

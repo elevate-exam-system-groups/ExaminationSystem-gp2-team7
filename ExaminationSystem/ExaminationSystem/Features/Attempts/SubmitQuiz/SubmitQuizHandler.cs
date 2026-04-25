@@ -1,26 +1,28 @@
 using ExaminationSystem.Common;
-using ExaminationSystem.DbContexts;
+using ExaminationSystem.Features.Attempts.SubmitQuiz.Helpers;
 using ExaminationSystem.Models.Enums;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Attempts.SubmitQuiz
 {
+    /// <summary>
+    /// Orchestrator: coordinates validation, business logic, and persistence.
+    /// All DB operations are delegated to SubmitQuizReader.
+    /// </summary>
     public class SubmitQuizHandler : IRequestHandler<SubmitQuizCommand, Result<SubmitQuizResponse>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly SubmitQuizReader _reader;
 
-        public SubmitQuizHandler(ApplicationDbContext context)
+        public SubmitQuizHandler(SubmitQuizReader reader)
         {
-            _context = context;
+            _reader = reader;
         }
 
         public async Task<Result<SubmitQuizResponse>> Handle(
             SubmitQuizCommand request, CancellationToken cancellationToken)
         {
             // 1. جيب المحاولة
-            var attempt = await _context.Attempts
-                .FirstOrDefaultAsync(a => a.Id == request.AttemptId, cancellationToken);
+            var attempt = await _reader.GetAttemptAsync(request.AttemptId, cancellationToken);
 
             if (attempt == null)
                 return Result<SubmitQuizResponse>.Failure(
@@ -45,8 +47,7 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
                     });
 
             // 4. جيب الكويز
-            var quiz = await _context.Quizzes
-                .FirstOrDefaultAsync(q => q.Id == attempt.QuizId, cancellationToken);
+            var quiz = await _reader.GetQuizAsync(attempt.QuizId, cancellationToken);
 
             // 5. احسب لو الوقت خلص
             var deadline = attempt.StartTime.AddMinutes(quiz.DurationMinutes);
@@ -54,26 +55,12 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
             var newStatus = isTimedOut ? AttemptStatus.TimedOut : AttemptStatus.Submitted;
 
             // 6. عدد الأسئلة الكلي
-            var totalQuestions = await _context.Questions
-                .CountAsync(q => q.QuizId == quiz.Id, cancellationToken);
+            var totalQuestions = await _reader.CountQuestionsAsync(quiz.Id, cancellationToken);
 
             // 7. عدد الإجابات الصح
-            int correctAnswers;
-            if (isTimedOut)
-            {
-                correctAnswers = await _context.Answers
-                    .CountAsync(a =>
-                        a.AttemptId == attempt.Id
-                        && a.IsCorrect
-                        && a.SubmittedAt <= deadline, cancellationToken);
-            }
-            else
-            {
-                correctAnswers = await _context.Answers
-                    .CountAsync(a =>
-                        a.AttemptId == attempt.Id
-                        && a.IsCorrect, cancellationToken);
-            }
+            var correctAnswers = isTimedOut
+                ? await _reader.CountCorrectAnswersBeforeDeadlineAsync(attempt.Id, deadline, cancellationToken)
+                : await _reader.CountCorrectAnswersAsync(attempt.Id, cancellationToken);
 
             // 8. احسب الدرجة
             var score = totalQuestions > 0
@@ -90,7 +77,7 @@ namespace ExaminationSystem.Features.Attempts.SubmitQuiz
             attempt.CorrectAnswers = correctAnswers;
             attempt.Passed = passed;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _reader.SaveChangesAsync(cancellationToken);
 
             // 10. رجّع النتيجة
             return Result<SubmitQuizResponse>.Success(new SubmitQuizResponse
