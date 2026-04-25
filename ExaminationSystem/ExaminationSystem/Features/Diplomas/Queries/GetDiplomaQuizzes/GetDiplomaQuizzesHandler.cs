@@ -1,4 +1,5 @@
 ﻿using ExaminationSystem.Common;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
@@ -9,20 +10,11 @@ using Microsoft.Identity.Client;
 
 namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
 {
-    public class GetDiplomaQuizzesHandler 
+    public class GetDiplomaQuizzesHandler(IUnitOfWork unitOfWork, IMemoryCache memoryCache) 
         : IRequestHandler<GetDiplomaQuizzesQuery, Result<List<DiplomaQuizResponse>>>
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _memoryCache;
-
         private static readonly MemoryCacheEntryOptions CacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(CacheKeys.Durations.Short);
-
-        public GetDiplomaQuizzesHandler(ApplicationDbContext context, IMemoryCache memoryCache)
-        {
-            this._context = context;
-            this._memoryCache = memoryCache;
-        }
 
         public async Task<Result<List<DiplomaQuizResponse>>> Handle(
             GetDiplomaQuizzesQuery request, CancellationToken cancellationToken)
@@ -31,7 +23,7 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
             var cacheKey = CacheKeys.GetDiplomaQuizzesCacheKey(request.DiplomaId, request.StudentId);
 
             // Check if the result is already in the cache
-            if (_memoryCache.TryGetValue(cacheKey, out List<DiplomaQuizResponse>? cached))
+            if (memoryCache.TryGetValue(cacheKey, out List<DiplomaQuizResponse>? cached))
             {
                 return Result<List<DiplomaQuizResponse>>.Success(cached!);
             }
@@ -52,7 +44,7 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
             // Query published quizzes with student attempt stats
             var quizzes = await FetchDiplomaQuizzesAsync(request, cancellationToken);
 
-            _memoryCache.Set(cacheKey, quizzes, CacheOptions);
+            memoryCache.Set(cacheKey, quizzes, CacheOptions);
 
             return Result<List<DiplomaQuizResponse>>.Success(quizzes);
         }
@@ -64,7 +56,7 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
         private async Task<(bool Exists, DiplomaStatus Status)> GetDiplomaStatusAsync(
             Guid diplomaId, CancellationToken cancellationToken)
         {
-            return await _context.Diplomas
+            return await unitOfWork.GetRepository<Diploma>().AsQueryable()
                 .Where(d => d.Id == diplomaId)
                 .Select(d => ValueTuple.Create(true, d.Status))
                 .FirstOrDefaultAsync(cancellationToken);
@@ -73,7 +65,7 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetDiplomaQuizzes
         private async Task<List<DiplomaQuizResponse>> FetchDiplomaQuizzesAsync(
             GetDiplomaQuizzesQuery request, CancellationToken cancellationToken)
         {
-            var quizzes = await _context.Quizzes
+            var quizzes = await unitOfWork.GetRepository<Quiz>().AsQueryable()
                             .Where(q => q.DiplomaId == request.DiplomaId
                                 && q.Status == QuizStatus.Published)
                             .Select(q => new

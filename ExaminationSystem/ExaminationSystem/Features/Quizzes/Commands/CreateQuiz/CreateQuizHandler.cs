@@ -1,4 +1,5 @@
 ﻿using ExaminationSystem.Common;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
@@ -7,24 +8,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Quizzes.Commands.CreateQuiz
 {
-    public class CreateQuizHandler : IRequestHandler<CreateQuizCommand, Result<CreateQuizResponse>>
+    public class CreateQuizHandler(IUnitOfWork unitOfWork, CreateQuizValidator validator) 
+        : IRequestHandler<CreateQuizCommand, Result<CreateQuizResponse>>
     {
-        private readonly ApplicationDbContext _context;
-        private readonly CreateQuizValidator _validator;
-
-        public CreateQuizHandler(ApplicationDbContext context, CreateQuizValidator validator)
-        {
-            this._context = context;
-            this._validator = validator;
-        }
 
         public async Task<Result<CreateQuizResponse>> Handle(CreateQuizCommand command, CancellationToken cancellationToken)
         {
             // Validation
-            (bool flowControl, Result<CreateQuizResponse> value) = await ValidateCreateQuizCommand(command, cancellationToken);
-            if (!flowControl)
+            var validationResult = await ValidateCreateQuizCommand(command, cancellationToken);
+            if (validationResult is not null)
             {
-                return value;
+                return validationResult;
             }
 
             // Create entity
@@ -42,8 +36,8 @@ namespace ExaminationSystem.Features.Quizzes.Commands.CreateQuiz
                 CreatedBy = command.AdminId
             };
 
-            _context.Quizzes.Add(quiz);
-            await _context.SaveChangesAsync(cancellationToken);
+            unitOfWork.GetRepository<Quiz>().Add(quiz);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
             // Map response
             var response = new CreateQuizResponse
@@ -64,23 +58,26 @@ namespace ExaminationSystem.Features.Quizzes.Commands.CreateQuiz
 
         // -------- Helpers ------------
 
-        private async Task<(bool flowControl, Result<CreateQuizResponse> value)> ValidateCreateQuizCommand(CreateQuizCommand request, CancellationToken cancellationToken)
+        private async Task<Result<CreateQuizResponse>?> ValidateCreateQuizCommand(CreateQuizCommand request, CancellationToken cancellationToken)
         {
             // Validations
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(" | ", validationResult.Errors.Select(e => e.ErrorMessage));
-                return (flowControl: false, value: Result<CreateQuizResponse>.Failure(errors, StatusCodes.Status422UnprocessableEntity));
+                return Result<CreateQuizResponse>.Failure(
+                    errors, StatusCodes.Status422UnprocessableEntity);
             }
 
             // Verify diploma exists
-            var diplomaExists = await _context.Diplomas.AnyAsync(d => d.Id == request.DiplomaId);
+            var diplomaExists = await unitOfWork.GetRepository<Diploma>().AsQueryable()
+                .AnyAsync(d => d.Id == request.DiplomaId);
             if (!diplomaExists)
-                return (flowControl: false, value: Result<CreateQuizResponse>.Failure(
-                    "Diploma not found.", StatusCodes.Status404NotFound));
-            return (flowControl: true, value: null);
+                return Result<CreateQuizResponse>.Failure(
+                    "Diploma not found.", StatusCodes.Status404NotFound);
+
+            return null;
         }
     }
 }

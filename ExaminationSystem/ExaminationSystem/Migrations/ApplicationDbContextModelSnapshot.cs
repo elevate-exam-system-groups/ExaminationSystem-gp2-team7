@@ -508,7 +508,7 @@ namespace ExaminationSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.StudentDiploma", b =>
@@ -732,7 +732,7 @@ namespace ExaminationSystem.Migrations
                     b.Property<int>("OptionsCount")
                         .HasColumnType("int");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
 
                     b.HasDiscriminator().HasValue("MCQ");
                 });
@@ -744,7 +744,7 @@ namespace ExaminationSystem.Migrations
                     b.Property<bool>("CorrectAnswer")
                         .HasColumnType("bit");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
 
                     b.HasDiscriminator().HasValue("TrueFalse");
                 });
