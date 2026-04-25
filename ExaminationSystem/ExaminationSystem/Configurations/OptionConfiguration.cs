@@ -4,9 +4,9 @@ using ExaminationSystem.Models;
 
 namespace ExaminationSystem.Configurations
 {
-    public class OptionConfiguration : IEntityTypeConfiguration<Option>
+    public class OptionConfiguration : IEntityTypeConfiguration<QuestionOption>
     {
-        public void Configure(EntityTypeBuilder<Option> builder)
+        public void Configure(EntityTypeBuilder<QuestionOption> builder)
         {
             builder.ToTable("Options");
 

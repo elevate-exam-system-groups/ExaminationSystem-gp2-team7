@@ -10,6 +10,6 @@ namespace ExaminationSystem.Models
 
         public int OptionsCount { get; set; } = 0;
 
-        public virtual ICollection<Option> Options { get; set; } = new List<Option>();
+        public virtual ICollection<QuestionOption> Options { get; set; } = new List<QuestionOption>();
     }
 }

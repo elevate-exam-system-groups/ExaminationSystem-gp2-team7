@@ -84,7 +84,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers
         private async Task<Dictionary<Guid, CorrectOptionProjection>> GetCorrectOptionsAsync(
             List<Guid> questionIds, CancellationToken cancellationToken)
         {
-            var options = await _unitOfWork.GetRepository<Option>().AsQueryable()
+            var options = await _unitOfWork.GetRepository<QuestionOption>().AsQueryable()
                 .Where(o => questionIds.Contains(o.MCQQuestionId) && o.IsCorrect)
                 .Select(o => new CorrectOptionProjection
                 {
