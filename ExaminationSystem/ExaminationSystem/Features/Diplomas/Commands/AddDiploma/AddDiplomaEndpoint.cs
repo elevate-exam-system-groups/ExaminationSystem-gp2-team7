@@ -9,7 +9,7 @@ namespace ExaminationSystem.Features.Diplomas.Commands.AddDiploma
     [Authorize(Roles = "Admin")]
     public class AddDiplomaEndpoint(IMediator _mediator) : ApiControllerBase
     {
-        [HttpPost]
+        [HttpPost("AddDiploma")]
         public async Task<ActionResult> AddDiploma(AddDiplomaCommand command)
         {
             var result =await _mediator.Send(command);
