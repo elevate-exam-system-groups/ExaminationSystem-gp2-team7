@@ -3,6 +3,7 @@ using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace ExaminationSystem.Common.Behaviors
 {
@@ -10,8 +11,9 @@ namespace ExaminationSystem.Common.Behaviors
         IUnitOfWork unitOfWork,
         IAttemptAutoSubmitService attemptAutoSubmitService)
         : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IActiveAttemptRequest
+        where TRequest : IActiveAttemptRequest<TResponse>
     {
+
         public async Task<TResponse> Handle(
             TRequest request, 
             RequestHandlerDelegate<TResponse> next, 
@@ -34,8 +36,10 @@ namespace ExaminationSystem.Common.Behaviors
                 DateTime.UtcNow > attempt.Deadline) 
             {
                 // Trigger auto-submit
-                await attemptAutoSubmitService.AutoSubmitAsync(request.AttemptId, cancellationToken);            
-            
+                await attemptAutoSubmitService.AutoSubmitAsync(request.AttemptId, cancellationToken);
+
+                return request.CreateTimedOutResponse();
+
             }
 
             // Timer is fine, proceed to the actual handler
