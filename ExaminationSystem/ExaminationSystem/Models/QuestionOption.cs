@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ExaminationSystem.Models
 {
     [Table("Options")]
-    public class Option : BaseEntity
+    public class QuestionOption : BaseEntity
     {
         public string OptionText { get; set; }
 

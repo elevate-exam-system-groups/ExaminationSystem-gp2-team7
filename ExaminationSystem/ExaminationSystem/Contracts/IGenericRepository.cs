@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using ExaminationSystem.Models;
 
-namespace E_Commerce.Domain.Contracts
+namespace ExaminationSystem.Contracts
 {
     public interface IGenericRepository<IEntity> where IEntity : BaseEntity
     {
@@ -16,5 +12,9 @@ namespace E_Commerce.Domain.Contracts
         void Update(IEntity entity);
         void SoftDelete(IEntity entity);
         void HardDelete(IEntity entity);
+        void Attach(IEntity entity);
+
+     
+        Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate);
     }
 }

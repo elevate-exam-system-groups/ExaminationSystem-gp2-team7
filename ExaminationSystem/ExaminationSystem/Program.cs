@@ -1,9 +1,15 @@
 using System.Text;
-using E_Commerce.Domain.Contracts;
-using E_Commerce.Persistence.Repositories;
+using ExaminationSystem.Common;
+using ExaminationSystem.Common.Behaviors;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
+using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
+using ExaminationSystem.Features.Attempts.Services;
+using ExaminationSystem.Features.Attempts.SubmitQuiz;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
+using ExaminationSystem.Repositories;
+using ExaminationSystem.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,7 +26,6 @@ namespace ExaminationSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             // 1️⃣ DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -70,10 +75,8 @@ namespace ExaminationSystem
                     typeof(Program).Assembly,
                     typeof(SeedIdentityHandler).Assembly
                 );
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             });
-
-
-
 
             // FluentValidation
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -85,7 +88,7 @@ namespace ExaminationSystem
             builder.Services.AddMemoryCache(); 
 
             // Email Service
-            builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
+            builder.Services.AddScoped<IEmailService, ExaminationSystem.Repositories.EmailService>();
 
 
             builder.Services.AddControllers();
@@ -116,13 +119,25 @@ namespace ExaminationSystem
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer" // ⚠️ CRITICAL: This ID must strictly match the name defined in AddSecurityDefinition above
+                                Id = "Bearer"
                             }
                         },
-                        Array.Empty<string>() // An empty array means this authentication requirement applies globally to all endpoints
+                        Array.Empty<string>()
                     }
                 });
             });
+
+            // Feature Readers
+            builder.Services.AddScoped<AttemptResultsReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Attempts.SubmitQuiz.Helpers.SubmitQuizReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.CreateQuestion.Helpers.CreateQuestionReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers.UpdateQuestionReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.DeleteQuestion.Helpers.DeleteQuestionReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Attempts.Queries.GetAttemptDetail.AttemptDetailReader>();
+
+            // Timer Enforcement
+            builder.Services.AddScoped<IAttemptAutoSubmitService, AttemptAutoSubmitService>();
+            builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AttemptDeadlineBehavior<,>));
 
 
             var app = builder.Build();
@@ -130,10 +145,15 @@ namespace ExaminationSystem
             using (var scope = app.Services.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
                 await mediator.Send(new SeedIdentityCommand());
-                
+
+
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             }
+
+            // Seed mock data for testing
+            await DataSeeder.SeedMockDataAsync(app.Services);
 
 
             // Configure the HTTP request pipeline.

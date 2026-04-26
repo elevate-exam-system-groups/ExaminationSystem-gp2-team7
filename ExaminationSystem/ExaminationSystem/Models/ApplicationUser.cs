@@ -4,7 +4,7 @@ using System;
 namespace ExaminationSystem.Models
 {
     
-    public partial class ApplicationUser : IdentityUser<Guid>
+    public partial class ApplicationUser : IdentityUser<Guid> 
     {
         public string FullName { get; set; }
         public string? ProfileImageUrl { get; set; }

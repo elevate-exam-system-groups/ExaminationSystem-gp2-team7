@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using ExaminationSystem.Common;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
@@ -9,12 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas
 {
-    [ApiController]
     [Route("api/diplomas")]
-    [Authorize(Roles = "User")]
-    public class GetAllDiplomasEndpoint(IMediator _mediator) : ControllerBase
+    [Authorize(Roles = "Student")]
+    public class GetAllDiplomasEndpoint(IMediator _mediator) : ApiControllerBase
     {
-        [HttpGet]
+        [HttpGet("GetAllDiplomas")]
         public async Task<IActionResult> GetAllDiplomas([FromQuery] GetAllDiplomasQuery query)
         {
             var result = await _mediator.Send(query);
