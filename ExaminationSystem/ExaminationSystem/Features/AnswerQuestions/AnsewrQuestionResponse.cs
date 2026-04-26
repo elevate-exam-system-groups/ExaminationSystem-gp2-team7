@@ -2,5 +2,7 @@
 {
     public class AnsewrQuestionResponse
     {
+        public bool Saved { get; set; }
+
     }
 }

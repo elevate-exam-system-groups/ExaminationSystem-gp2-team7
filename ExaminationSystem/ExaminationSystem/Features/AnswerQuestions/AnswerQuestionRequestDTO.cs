@@ -1,10 +1,8 @@
 ﻿namespace ExaminationSystem.Features.AnswerQuestions
 {
-    public class AnswerQuestionDTO
+    public class AnswerQuestionRequestDTO
     {
-        public Guid AttemptId { get; set; }
         public Guid question_id { get; set; }
         public Guid selected_option_id { get; set; }
-        public Guid UserId { get; set; }
     }
 }

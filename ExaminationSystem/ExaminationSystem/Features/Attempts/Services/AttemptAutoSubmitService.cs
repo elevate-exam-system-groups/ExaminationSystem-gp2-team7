@@ -32,7 +32,7 @@ namespace ExaminationSystem.Features.Attempts.Services
 
             // Attach a stub entity to the Change Tracker
             var attemptToUpdate = new Attempt { Id = attemptId };
-            attemptRepo.Attach(attemptToUpdate);
+            attemptRepo.Update(attemptToUpdate);
 
             // Update the specific properties
             attemptToUpdate.Status = AttemptStatus.TimedOut;

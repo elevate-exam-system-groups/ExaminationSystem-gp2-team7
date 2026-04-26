@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using ExaminationSystem.Common.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,22 +18,31 @@ namespace ExaminationSystem.Features.AnswerQuestions
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "Student")]
+        [HttpPost("{attemptId}/answer")]
+        public async Task<IActionResult> AnswerQuestion(
+        Guid attemptId,
+        [FromBody] PostAswerQuestionCommand request)
+        {
+            var userId = User.GetUserId(); 
 
-        //[HttpPost("api/attempts/{attemptId}/answer")]
-        //public async Task<IActionResult> AnswerQuestion( int attemptId, [FromBody] AnswerQuestionDTO dto)
-        //{
-        //    var userId = User.GetUserId(); // حسب implementation عندك
+            var command = new PostAswerQuestionCommand( new AnswerQuestionDTO
+            {
+                AttemptId = attemptId,
+                question_id = request.AnswerQuestionDTO.question_id,
+                selected_option_id = request.AnswerQuestionDTO.selected_option_id,
+                UserId = Guid.Parse(userId)
+            });
 
-        //    var command = new PostAswerQuestionCommand
-        //    {
-        //        AttemptId = attemptId,
-        //        UserId = userId,
-        //        AnswerQuestionDTO = dto
-        //    };
+            var result = await _mediator.Send(command);
 
-        //    var result = await mediator.Send(command);
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new { message = result.Error });
 
-        //    return StatusCode(result.StatusCode, result);
-        //}
+            return Ok(result); 
+        }
+
+
+
     }
 }

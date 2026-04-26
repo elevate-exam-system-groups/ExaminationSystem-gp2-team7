@@ -1,4 +1,6 @@
 using System.Text;
+using ExaminationSystem.Common.Behaviors;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
 using ExaminationSystem.Features.Attempts.Services;
@@ -22,7 +24,6 @@ namespace ExaminationSystem
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             // 1️⃣ DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
