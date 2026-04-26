@@ -135,6 +135,7 @@ namespace ExaminationSystem
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.CreateQuestion.Helpers.CreateQuestionReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers.UpdateQuestionReader>();
             builder.Services.AddScoped<ExaminationSystem.Features.Questions.Commands.DeleteQuestion.Helpers.DeleteQuestionReader>();
+            builder.Services.AddScoped<ExaminationSystem.Features.Attempts.Queries.GetAttemptDetail.AttemptDetailReader>();
 
             // Timer Enforcement
             builder.Services.AddScoped<IAttemptAutoSubmitService, AttemptAutoSubmitService>();
@@ -148,10 +149,9 @@ namespace ExaminationSystem
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
                 await mediator.Send(new SeedIdentityCommand());
 
-                // Seed بيانات تجريبية لتاسك Submit Quiz
+
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await SeedSubmitQuizData.SeedAsync(userManager, dbContext);
             }
 
 

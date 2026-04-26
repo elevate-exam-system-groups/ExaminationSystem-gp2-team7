@@ -17,9 +17,7 @@ namespace ExaminationSystem.Features.Questions.Commands.CreateQuestion
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// POST /api/admin/quizzes/{quizId}/questions — إضافة سؤال MCQ جديد
-        /// </summary>
+        
         [HttpPost("{quizId:guid}/questions")]
         public async Task<IActionResult> CreateQuestion(
             Guid quizId,
@@ -30,8 +28,10 @@ namespace ExaminationSystem.Features.Questions.Commands.CreateQuestion
             {
                 QuizId = quizId,
                 Text = request.Text,
+                QuestionType = request.QuestionType,
                 Options = request.Options,
-                Explanation = request.Explanation
+                Explanation = request.Explanation,
+                CorrectAnswer = request.CorrectAnswer
             };
 
             var result = await _mediator.Send(command, cancellationToken);

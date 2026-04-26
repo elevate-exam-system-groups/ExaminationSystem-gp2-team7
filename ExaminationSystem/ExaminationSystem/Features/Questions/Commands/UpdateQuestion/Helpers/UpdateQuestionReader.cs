@@ -4,9 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers
 {
-    /// <summary>
-    /// SRP: owns all database operations needed by UpdateQuestion.
-    /// </summary>
     public sealed class UpdateQuestionReader
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -16,19 +13,29 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers
             _unitOfWork = unitOfWork;
         }
 
-        /// <summary>
-        /// جيب السؤال MCQ بالـ ID
-        /// </summary>
-        public async Task<MultipleChoiceQuestion?> GetQuestionAsync(
+        public async Task<string?> GetQuestionTypeAsync(
+            Guid questionId, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.GetRepository<Question>().AsQueryable()
+                .Where(q => q.Id == questionId)
+                .Select(q => q.QuestionType)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<TrueFalseQuestion?> GetTrueFalseQuestionAsync(
+            Guid questionId, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.GetRepository<TrueFalseQuestion>().AsQueryable()
+                .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken);
+        }
+
+        public async Task<MultipleChoiceQuestion?> GetMcqQuestionAsync(
             Guid questionId, CancellationToken cancellationToken)
         {
             return await _unitOfWork.GetRepository<MultipleChoiceQuestion>().AsQueryable()
                 .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken);
         }
 
-        /// <summary>
-        /// جيب الـ Options القديمة بتاعت السؤال
-        /// </summary>
         public async Task<List<QuestionOption>> GetOptionsByQuestionIdAsync(
             Guid questionId, CancellationToken cancellationToken)
         {
@@ -37,19 +44,18 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion.Helpers
                 .ToListAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// امسح الـ Options القديمة
-        /// </summary>
         public void RemoveOptions(List<QuestionOption> options)
         {
             var optionRepo = _unitOfWork.GetRepository<QuestionOption>();
             foreach (var option in options)
-                optionRepo.HardDelete(option);
+                optionRepo.SoftDelete(option);
         }
 
-        /// <summary>
-        /// احفظ كل التغييرات
-        /// </summary>
+        public void AddOption(QuestionOption option)
+        {
+            _unitOfWork.GetRepository<QuestionOption>().Add(option);
+        }
+
         public async Task SaveChangesAsync(CancellationToken cancellationToken)
         {
             await _unitOfWork.SaveChangesAsync(cancellationToken);

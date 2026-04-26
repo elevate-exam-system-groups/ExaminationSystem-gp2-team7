@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
@@ -27,18 +27,7 @@ namespace ExaminationSystem.Repositories
 
         public void Attach(IEntity entity) => _dbContext.Set<IEntity>().Attach(entity);
 
-        // Added for SubmitQuiz task
-        public async Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate)
-            => await _dbContext.Set<IEntity>().FirstOrDefaultAsync(predicate);
-
-        public async Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate, params Expression<Func<IEntity, object>>[] includes)
-        {
-            IQueryable<IEntity> query = _dbContext.Set<IEntity>();
-            foreach (var include in includes)
-                query = query.Include(include);
-            return await query.FirstOrDefaultAsync(predicate);
-        }
-
+       
         public async Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate)
             => await _dbContext.Set<IEntity>().CountAsync(predicate);
     }

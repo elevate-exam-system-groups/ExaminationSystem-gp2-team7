@@ -4,29 +4,16 @@ using MediatR;
 
 namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
 {
-    /// <summary>
-    /// أمر تعديل سؤال MCQ — نفس الـ payload بتاع Create + الـ QuestionId
-    /// </summary>
     public record UpdateQuestionCommand : IRequest<Result<bool>>
     {
-        /// <summary>
-        /// ID السؤال اللي هنعدله (من الـ URL)
-        /// </summary>
         public Guid QuestionId { get; init; }
-
-        /// <summary>
-        /// نص السؤال الجديد
-        /// </summary>
         public string Text { get; init; } = default!;
 
-        /// <summary>
-        /// الاختيارات الجديدة (replace كامل)
-        /// </summary>
-        public List<OptionDto> Options { get; init; } = [];
-
-        /// <summary>
-        /// شرح الإجابة الصح
-        /// </summary>
+        // MCQ
+        public List<OptionDto>? Options { get; init; }
         public string? Explanation { get; init; }
+
+        // TrueFalse
+        public bool? CorrectAnswer { get; init; }
     }
 }

@@ -22,11 +22,11 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 
         public async Task<Result<string>> Handle(SendOtpCommand request, CancellationToken cancellationToken)
         {
-            // FluentValidation بيتكفل بالـ validation بتاع Email
+           
 
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            // لو اليوزر مش موجود → نرجع نفس الرسالة (عشان الأمان — منكشفش إن الإيميل مش مسجل)
+            
             if (user == null)
                 return Result<string>.Success("Verification code has been sent to your email");
 

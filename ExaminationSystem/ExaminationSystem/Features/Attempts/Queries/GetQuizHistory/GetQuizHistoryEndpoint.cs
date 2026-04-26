@@ -1,5 +1,4 @@
 using ExaminationSystem.Common;
-using ExaminationSystem.Features.Attempts.Queries.ViewResults;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,21 +36,6 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetQuizHistory
                 Page = page,
                 PerPage = perPage
             };
-
-            var result = await _mediator.Send(query, cancellationToken);
-
-            return HandleResult(result);
-        }
-
-        /// <summary>
-        /// GET /api/student/attempts/{attemptId} — تفاصيل محاولة معيّنة
-        /// </summary>
-        [HttpGet("{attemptId:guid}")]
-        public async Task<IActionResult> GetAttemptDetail(
-            Guid attemptId, CancellationToken cancellationToken)
-        {
-            // بنستخدم نفس Query بتاع Story 3.5 (GetAttemptResults)
-            var query = new GetAttemptResultsQuery(attemptId, UserId, IsAdmin: false);
 
             var result = await _mediator.Send(query, cancellationToken);
 

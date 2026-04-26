@@ -7,25 +7,26 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
     {
         public UpdateQuestionValidator()
         {
-            // نص السؤال مطلوب
+            
             RuleFor(x => x.Text)
                 .NotEmpty().WithMessage("Question text is required.");
 
-            // لازم 2 اختيارات على الأقل
-            RuleFor(x => x.Options)
-                .Must(options => options != null && options.Count >= 2)
-                .WithMessage("At least 2 options are required.");
-
-            // لازم واحد بالظبط يكون correct
-            RuleFor(x => x.Options)
-                .Must(options => options != null && options.Count(o => o.IsCorrect) == 1)
-                .WithMessage("Exactly one correct option required.");
-
-            // كل اختيار لازم يكون فيه نص
-            RuleForEach(x => x.Options).ChildRules(option =>
+           
+            When(x => x.Options != null && x.Options.Any(), () =>
             {
-                option.RuleFor(o => o.Text)
-                    .NotEmpty().WithMessage("Option text is required.");
+                RuleFor(x => x.Options)
+                    .Must(options => options!.Count >= 2)
+                    .WithMessage("At least 2 options are required.");
+
+                RuleFor(x => x.Options)
+                    .Must(options => options!.Count(o => o.IsCorrect) == 1)
+                    .WithMessage("Exactly one correct option required.");
+
+                RuleForEach(x => x.Options).ChildRules(option =>
+                {
+                    option.RuleFor(o => o.Text)
+                        .NotEmpty().WithMessage("Option text is required.");
+                });
             });
         }
     }

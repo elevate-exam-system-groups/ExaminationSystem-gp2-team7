@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using ExaminationSystem.Models;
 
 namespace ExaminationSystem.Contracts
@@ -14,9 +14,7 @@ namespace ExaminationSystem.Contracts
         void HardDelete(IEntity entity);
         void Attach(IEntity entity);
 
-        // Added for SubmitQuiz task
-        Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate);
-        Task<IEntity?> FindAsync(Expression<Func<IEntity, bool>> predicate, params Expression<Func<IEntity, object>>[] includes);
+     
         Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate);
     }
 }

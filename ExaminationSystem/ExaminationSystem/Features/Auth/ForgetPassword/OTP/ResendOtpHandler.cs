@@ -22,15 +22,15 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 
         public async Task<Result<string>> Handle(ResendOtpCommand request, CancellationToken cancellationToken)
         {
-            // FluentValidation بيتكفل بالـ validation بتاع Email
+            
 
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            // لو اليوزر مش موجود → نرجع نفس الرسالة (عشان الأمان)
+         
             if (user == null)
                 return Result<string>.Success("Verification code has been sent to your email");
 
-            // شيك حد الإرسال
+          
             if (user.OtpResendWindowStart != null)
             {
                 if (user.OtpResendWindowStart > DateTime.UtcNow.AddHours(-1))
@@ -42,7 +42,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
                 }
                 else
                 {
-                    // النافذة خلصت → reset
+                   
                     user.OtpResendCount = 0;
                     user.OtpResendWindowStart = DateTime.UtcNow;
                 }
@@ -52,7 +52,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
                 user.OtpResendWindowStart = DateTime.UtcNow;
             }
 
-            // اعمل OTP جديد
+           
             user.EmailOtpCode = null;
 
             var otp = OtpHelper.GenerateOtp();

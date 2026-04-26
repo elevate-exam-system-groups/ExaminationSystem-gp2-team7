@@ -17,22 +17,22 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
 
         public async Task<Result<string>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            // FluentValidation بيتكفل بالـ validation
+            
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
                 return Result<string>.Failure("Invalid request.");
 
-            // شيك الـ Token
+           
             var tokenHash = OtpHelper.HashOtp(request.ResetToken);
             if (user.ResetToken != tokenHash)
                 return Result<string>.Failure("Token invalid or expired.");
 
-            // شيك صلاحية الـ Token
+           
             if (user.ResetTokenExpiresAt == null || user.ResetTokenExpiresAt < DateTime.UtcNow)
                 return Result<string>.Failure("Token invalid or expired.");
 
-            // غيّر الباسورد
+           
             await _userManager.RemovePasswordAsync(user);
             var result = await _userManager.AddPasswordAsync(user, request.NewPassword);
 
@@ -42,7 +42,7 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.ResetPassword
                 return Result<string>.Failure(errors);
             }
 
-            // حدّث الـ Security Stamp ونضّف الـ Tokens
+           
             await _userManager.UpdateSecurityStampAsync(user);
 
             user.ResetToken = null;

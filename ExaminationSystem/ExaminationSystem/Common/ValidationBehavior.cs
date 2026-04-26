@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MediatR;
 
 namespace ExaminationSystem.Common
@@ -15,28 +15,50 @@ namespace ExaminationSystem.Common
 
         public async Task<TResponse> Handle(
             TRequest request,
-            RequestHandlerDelegate<TResponse> next,  // ← ده الـ Handler اللي بعدنا
+            RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
-            // 1️⃣ لو مفيش Validators للـ Request ده → كمّل عادي
+            // 1️⃣ لو مفيش Validators → كمّل عادي
             if (!_validators.Any())
                 return await next();
-            // 2️⃣ شغّل كل الـ Validators على الـ Request
+
+            // 2️⃣ شغّل كل الـ Validators
             var context = new ValidationContext<TRequest>(request);
             var validationResults = await Task.WhenAll(
                 _validators.Select(v => v.ValidateAsync(context, cancellationToken)));
-            // 3️⃣ اجمع كل الأخطاء من كل الـ Validators
+
+            // 3️⃣ اجمع الأخطاء
             var failures = validationResults
                 .SelectMany(r => r.Errors)
                 .Where(f => f != null)
                 .ToList();
-            // 4️⃣ لو فيه أخطاء → ارمي Exception (مش هيوصل للـ Handler)
+
+            // 4️⃣ لو فيه أخطاء → رجّع Result.Failure بدل throw
             if (failures.Any())
+            {
+                var errorMessage = string.Join(" | ", failures.Select(f => f.ErrorMessage));
+
+                // تحقق إن TResponse هو Result<T>
+                var responseType = typeof(TResponse);
+                if (responseType.IsGenericType && responseType.GetGenericTypeDefinition() == typeof(Result<>))
+                {
+                    var failureMethod = responseType.GetMethod("Failure",
+                        new[] { typeof(string), typeof(int) });
+
+                    if (failureMethod != null)
+                    {
+                        var result = failureMethod.Invoke(null,
+                            new object[] { errorMessage, StatusCodes.Status422UnprocessableEntity });
+                        return (TResponse)result!;
+                    }
+                }
+
+                // Fallback: لو مش Result<T>
                 throw new ValidationException(failures);
-            // 5️⃣ لو مفيش أخطاء → كمّل للـ Handler عادي
+            }
+
+            // 5️⃣ مفيش أخطاء → كمّل للـ Handler
             return await next();
         }
-
-
     }
 }

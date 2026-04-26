@@ -5,9 +5,6 @@ using MediatR;
 
 namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
 {
-    /// <summary>
-    /// Orchestrator: coordinates update flow.
-    /// </summary>
     public class UpdateQuestionHandler
         : IRequestHandler<UpdateQuestionCommand, Result<bool>>
     {
@@ -21,39 +18,57 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
         public async Task<Result<bool>> Handle(
             UpdateQuestionCommand request, CancellationToken cancellationToken)
         {
-            // 1. جيب السؤال
-            var question = await _reader.GetQuestionAsync(
+         
+            var questionType = await _reader.GetQuestionTypeAsync(
                 request.QuestionId, cancellationToken);
 
-            if (question == null)
+            if (questionType == null)
                 return Result<bool>.Failure(
                     "Question not found.", StatusCodes.Status404NotFound);
 
-            // 2. جيب الـ Options القديمة (كويري منفصل)
-            var oldOptions = await _reader.GetOptionsByQuestionIdAsync(
-                request.QuestionId, cancellationToken);
-
-            // 3. امسح الـ Options القديمة
-            _reader.RemoveOptions(oldOptions);
-
-            // 4. حدّث نص السؤال
-            question.QuestionText = request.Text;
-            question.OptionsCount = request.Options.Count;
-
-            // 5. اضيف الـ Options الجديدة
-            for (int i = 0; i < request.Options.Count; i++)
+          
+            if (questionType == "TrueFalse")
             {
-                var optionDto = request.Options[i];
-                question.Options.Add(new QuestionOption
+                var tfQuestion = await _reader.GetTrueFalseQuestionAsync(
+                    request.QuestionId, cancellationToken);
+
+                tfQuestion!.QuestionText = request.Text;
+
+                if (request.CorrectAnswer.HasValue)
+                    tfQuestion.CorrectAnswer = request.CorrectAnswer.Value;
+            }
+            else 
+            {
+                var mcqQuestion = await _reader.GetMcqQuestionAsync(
+                    request.QuestionId, cancellationToken);
+
+                mcqQuestion!.QuestionText = request.Text;
+
+                if (request.Options != null && request.Options.Any())
                 {
-                    OptionText = optionDto.Text,
-                    IsCorrect = optionDto.IsCorrect,
-                    OrderIndex = i + 1,
-                    Explanation = optionDto.IsCorrect ? request.Explanation : null
-                });
+                    
+                    var oldOptions = await _reader.GetOptionsByQuestionIdAsync(
+                        request.QuestionId, cancellationToken);
+                    _reader.RemoveOptions(oldOptions);
+
+                   
+                    mcqQuestion.OptionsCount = request.Options.Count;
+                    for (int i = 0; i < request.Options.Count; i++)
+                    {
+                        var optionDto = request.Options[i];
+                        _reader.AddOption(new QuestionOption
+                        {
+                            MCQQuestionId = request.QuestionId,
+                            OptionText = optionDto.Text,
+                            IsCorrect = optionDto.IsCorrect,
+                            OrderIndex = i + 1,
+                            Explanation = optionDto.IsCorrect ? request.Explanation : null
+                        });
+                    }
+                }
             }
 
-            // 6. احفظ
+           
             await _reader.SaveChangesAsync(cancellationToken);
 
             return Result<bool>.Success(true);

@@ -17,9 +17,7 @@ namespace ExaminationSystem.Features.Questions.Commands.DeleteQuestion
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// DELETE /api/admin/questions/{questionId} — حذف سؤال
-        /// </summary>
+       
         [HttpDelete("{questionId:guid}")]
         public async Task<IActionResult> DeleteQuestion(
             Guid questionId, CancellationToken cancellationToken)
@@ -29,7 +27,7 @@ namespace ExaminationSystem.Features.Questions.Commands.DeleteQuestion
             var result = await _mediator.Send(command, cancellationToken);
 
             if (result.IsSuccess)
-                return NoContent(); // 204
+                return NoContent(); 
 
             return HandleResult(result);
         }

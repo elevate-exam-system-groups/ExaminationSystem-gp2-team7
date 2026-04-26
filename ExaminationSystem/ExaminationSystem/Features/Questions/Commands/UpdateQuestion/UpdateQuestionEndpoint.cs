@@ -1,5 +1,4 @@
 using ExaminationSystem.Common;
-using ExaminationSystem.Features.Questions.Commands.CreateQuestion;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +17,7 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// PUT /api/admin/questions/{questionId} — تعديل سؤال MCQ
-        /// </summary>
+       
         [HttpPut("{questionId:guid}")]
         public async Task<IActionResult> UpdateQuestion(
             Guid questionId,
@@ -32,7 +29,8 @@ namespace ExaminationSystem.Features.Questions.Commands.UpdateQuestion
                 QuestionId = questionId,
                 Text = request.Text,
                 Options = request.Options,
-                Explanation = request.Explanation
+                Explanation = request.Explanation,
+                CorrectAnswer = request.CorrectAnswer
             };
 
             var result = await _mediator.Send(command, cancellationToken);
