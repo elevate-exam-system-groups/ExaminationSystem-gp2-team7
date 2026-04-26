@@ -1,4 +1,7 @@
 using System.Text;
+using ExaminationSystem.Common;
+using ExaminationSystem.Common.Behaviors;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
 using ExaminationSystem.Features.Attempts.Services;
@@ -83,7 +86,7 @@ namespace ExaminationSystem
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
             // In-Memory Caching
-            builder.Services.AddMemoryCache(); 
+            builder.Services.AddMemoryCache();
 
             // Email Service
             builder.Services.AddScoped<IEmailService, ExaminationSystem.Repositories.EmailService>();
@@ -100,12 +103,12 @@ namespace ExaminationSystem
                 // 1. Define the Security Scheme (This adds the "Authorize" button in Swagger UI)
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Name = "Authorization", 
-                    Type = SecuritySchemeType.ApiKey, 
-                    Scheme = "Bearer", 
-                    BearerFormat = "JWT", 
-                    In = ParameterLocation.Header, 
-                    Description = "Enter 'Bearer' [space] and then your valid token." 
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token."
                 });
 
                 // 2. Apply the Security Requirement Globally (This ensures Swagger actually sends the token with your requests)
@@ -167,6 +170,23 @@ namespace ExaminationSystem
 
             app.UseAuthorization();
 
+            app.UseStatusCodePages(async context =>
+            {
+                var response = context.HttpContext.Response;
+
+                if (response.StatusCode == 404)
+                {
+                    response.ContentType = "application/json";
+
+                    await response.WriteAsync("""
+                                             {
+                                                 "status": 404,
+                                                 "title": "Not Found",
+                                                 "message": "The requested resource was not found"
+                                             }
+                                             """);
+                }
+            });
 
             app.MapControllers();
 
