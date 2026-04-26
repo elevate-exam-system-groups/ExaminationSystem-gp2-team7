@@ -31,8 +31,10 @@ public class GetAllDiplomasHandler(IGenericRepository<Diploma> _genericRepo,
 
         var query = _genericRepo.AsQueryable()
                                 .Where(d => d.Status == DiplomaStatus.Published)
-                                .FilterByTitle(request.Title)
-                                .FilterByStudent(studentId);
+                                .FilterByTitle(request.Title);
+
+        if (request.OnlyEnrolled)
+            query = query.FilterByStudent(studentId);
 
         var total = await query.CountAsync(cancellationToken);
 
