@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ExaminationSystem.Common;
+using MediatR;
 
 namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas
 {
@@ -7,6 +8,6 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas
                                       int Page,
                                       int PageSize)
         : /*IRequest<IEnumerable<DiplomaResponse>>;*/
-          IRequest<PagedResponse<DiplomaResponse>>;
+          IRequest<Result<PagedResponse<DiplomaResponse>>>;
 
 }

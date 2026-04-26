@@ -1,19 +1,21 @@
-﻿using ExaminationSystem.Contracts;
+﻿using System.Security.Claims;
+using ExaminationSystem.Common;
+using ExaminationSystem.Contracts;
+using ExaminationSystem.Features.Attempts.Queries.GetStudentAttempts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using System.Security.Claims;
 
 namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas;
 
 public class GetAllDiplomasHandler(IGenericRepository<Diploma> _genericRepo,
                                    IMemoryCache cache,
                                    IHttpContextAccessor httpContextAccessor) 
-              : IRequestHandler<GetAllDiplomasQuery, PagedResponse<DiplomaResponse>>
+              : IRequestHandler<GetAllDiplomasQuery, Result<PagedResponse<DiplomaResponse>>>
 {
-    public async Task<PagedResponse<DiplomaResponse>> Handle(
+    public async Task<Result<PagedResponse<DiplomaResponse>>> Handle(
         GetAllDiplomasQuery request,
         CancellationToken cancellationToken)
     {
@@ -25,7 +27,7 @@ public class GetAllDiplomasHandler(IGenericRepository<Diploma> _genericRepo,
         var cacheKey = BuildCacheKey(studentId, request, page, pageSize);
 
         if (cache.TryGetValue(cacheKey, out PagedResponse<DiplomaResponse> cached))
-            return cached;
+            return Result<PagedResponse<DiplomaResponse>>.Success(cached);
 
         var query = _genericRepo.AsQueryable()
                                 .Where(d => d.Status == DiplomaStatus.Published)
@@ -65,7 +67,8 @@ public class GetAllDiplomasHandler(IGenericRepository<Diploma> _genericRepo,
 
         cache.Set(cacheKey, result, GetCacheOptions());
 
-        return result;
+        
+        return Result<PagedResponse<DiplomaResponse>>.Success(result);
     }
 
     private Guid? GetStudentId()
