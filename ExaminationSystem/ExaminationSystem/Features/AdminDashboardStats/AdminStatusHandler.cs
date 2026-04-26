@@ -1,6 +1,5 @@
-﻿using E_Commerce.Domain.Contracts;
-using ExaminationSystem.Common;
-using ExaminationSystem.Features.Auth.Login;
+﻿using ExaminationSystem.Common;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Models.Enums;
 using MediatR;

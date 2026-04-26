@@ -1,4 +1,6 @@
 using System.Text;
+using ExaminationSystem.Common.Behaviors;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Features.Attempts.Queries.GetAttemptResults.Helpers;
 using ExaminationSystem.Features.Attempts.Services;
@@ -22,8 +24,7 @@ namespace ExaminationSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             // 1️⃣ DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -87,8 +88,6 @@ namespace ExaminationSystem
             // Email Service
             builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
 
-            // Unit of Work
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
