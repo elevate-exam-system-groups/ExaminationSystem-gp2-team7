@@ -18,7 +18,7 @@ namespace ExaminationSystem.Features.Diplomas.Queries.GetAllDiplomas
         public async Task<IActionResult> GetAllDiplomas([FromQuery] GetAllDiplomasQuery query)
         {
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return HandleResult(result);
         }
     }
 }
