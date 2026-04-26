@@ -44,6 +44,9 @@ namespace ExaminationSystem.DbContexts
             modelBuilder.Entity<RefreshToken>()
                 .HasQueryFilter(rt => rt.User.DeletedAt == null);
 
+            // Composite Index
+            modelBuilder.Entity<Attempt>()
+                        .HasIndex(a => new { a.QuizId, a.StudentId });
 
             modelBuilder.Entity<ApplicationUser>().Ignore(u => u.IsDeleted);
             modelBuilder.Entity<Diploma>().Ignore(d => d.IsDeleted);

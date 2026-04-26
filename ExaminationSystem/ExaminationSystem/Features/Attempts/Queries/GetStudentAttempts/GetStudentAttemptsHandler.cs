@@ -52,12 +52,21 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetStudentAttempts
             return Result<PaginatedResult<AttemptDto>>.Success(result);
         }
 
-        private IQueryable<Attempt> ApplyFiltering(IQueryable<Attempt> query,
-                                                   GetStudentAttemptsQuery request)
+        private IQueryable<Attempt> ApplyFiltering(
+            IQueryable<Attempt> query,
+            GetStudentAttemptsQuery request)
         {
+            // To optimize for the composite index on (QuizId, StudentId)
+            if (request.QuizId.HasValue && request.StudentId.HasValue)
+                return query.Where(a =>
+                    a.QuizId == request.QuizId.Value &&
+                    a.StudentId == request.StudentId.Value);
+
+            // QuizId Only 
             if (request.QuizId.HasValue)
                 query = query.Where(a => a.QuizId == request.QuizId.Value);
 
+            // StudentId Only
             if (request.StudentId.HasValue)
                 query = query.Where(a => a.StudentId == request.StudentId.Value);
 
