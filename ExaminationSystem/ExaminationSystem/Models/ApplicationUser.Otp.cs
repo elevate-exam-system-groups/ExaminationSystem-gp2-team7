@@ -21,5 +21,6 @@ namespace ExaminationSystem.Models
         public int OtpResendCount { get; set; } = 0;
 
         public DateTime? OtpResendWindowStart { get; set; }
+        public DateTime? LastLoginDate { get; set; }
     }
 }
