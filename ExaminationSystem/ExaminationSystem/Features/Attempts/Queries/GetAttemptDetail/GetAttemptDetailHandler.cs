@@ -1,4 +1,5 @@
 using ExaminationSystem.Common;
+using ExaminationSystem.Common.Constants;
 using ExaminationSystem.Models.Enums;
 using MediatR;
 
@@ -50,7 +51,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetAttemptDetail
                 {
                     AnswerDetailDto dto;
 
-                    if (a.QuestionType == "TrueFalse")
+                    if (a.QuestionType == QuestionTypes.TrueFalse)
                     {
                         dto = new TrueFalseAnswerDto
                         {
