@@ -1,12 +1,11 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
+using ExaminationSystem.Common;
+using MediatR;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 {
-    public class VerifyOtpCommand: IRequest<string>
+    public record VerifyOtpCommand : IRequest<Result<string>>
     {
-        public string Email { get; set; }
-        public string Otp { get; set; }
-
+        public string Email { get; init; }
+        public string Otp { get; init; }
     }
 }

@@ -1,9 +1,10 @@
-﻿using MediatR;
+using ExaminationSystem.Common;
+using MediatR;
 
 namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 {
-    public class ResendOtpCommand: IRequest<string>
+    public record ResendOtpCommand : IRequest<Result<string>>
     {
-        public string Email { get; set; }
+        public string Email { get; init; }
     }
 }

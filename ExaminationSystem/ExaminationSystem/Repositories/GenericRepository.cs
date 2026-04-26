@@ -1,4 +1,5 @@
-﻿using ExaminationSystem.Contracts;
+using System.Linq.Expressions;
+using ExaminationSystem.Contracts;
 using ExaminationSystem.DbContexts;
 using ExaminationSystem.Models;
 using Microsoft.EntityFrameworkCore;
@@ -25,5 +26,9 @@ namespace ExaminationSystem.Repositories
         public void HardDelete(IEntity entity) => _dbContext.Set<IEntity>().Remove(entity);
 
         public void Attach(IEntity entity) => _dbContext.Set<IEntity>().Attach(entity);
+
+       
+        public async Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate)
+            => await _dbContext.Set<IEntity>().CountAsync(predicate);
     }
 }

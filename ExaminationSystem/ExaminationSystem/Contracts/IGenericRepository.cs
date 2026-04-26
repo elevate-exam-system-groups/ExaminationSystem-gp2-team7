@@ -1,4 +1,5 @@
-﻿using ExaminationSystem.Models;
+using System.Linq.Expressions;
+using ExaminationSystem.Models;
 
 namespace ExaminationSystem.Contracts
 {
@@ -12,5 +13,8 @@ namespace ExaminationSystem.Contracts
         void SoftDelete(IEntity entity);
         void HardDelete(IEntity entity);
         void Attach(IEntity entity);
+
+     
+        Task<int> CountAsync(Expression<Func<IEntity, bool>> predicate);
     }
 }
