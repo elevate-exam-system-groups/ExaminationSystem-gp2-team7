@@ -9,6 +9,7 @@ using ExaminationSystem.Features.Attempts.SubmitQuiz;
 using ExaminationSystem.Features.Auth.Register;
 using ExaminationSystem.Models;
 using ExaminationSystem.Repositories;
+using ExaminationSystem.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,7 +26,6 @@ namespace ExaminationSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             // 1️⃣ DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -90,8 +90,6 @@ namespace ExaminationSystem
             // Email Service
             builder.Services.AddScoped<IEmailService, ExaminationSystem.Repositories.EmailService>();
 
-            // Unit of Work
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -153,6 +151,9 @@ namespace ExaminationSystem
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             }
+
+            // Seed mock data for testing
+            await DataSeeder.SeedMockDataAsync(app.Services);
 
 
             // Configure the HTTP request pipeline.
