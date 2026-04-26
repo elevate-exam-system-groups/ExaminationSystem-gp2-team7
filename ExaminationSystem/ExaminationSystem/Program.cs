@@ -24,7 +24,6 @@ namespace ExaminationSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             // 1️⃣ DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -89,8 +88,6 @@ namespace ExaminationSystem
             // Email Service
             builder.Services.AddScoped<ExaminationSystem.Contracts.IEmailService, ExaminationSystem.Repositories.EmailService>();
 
-            // Unit of Work
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
