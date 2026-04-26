@@ -23,7 +23,7 @@ namespace ExaminationSystem.Features.Diplomas.Commands.DeleteDiploma
                 return Result<string>.Conflict("Published diploma with active enrollments cannot be deleted");
             }
 
-            _genericRepo.Remove(diploma);
+            _genericRepo.SoftDelete(diploma);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result<string>.Success("Diploma deleted successfully");

@@ -1,4 +1,4 @@
-﻿namespace ExaminationSystem.Models.Enums
+namespace ExaminationSystem.Models.Enums
 {
     public enum ErrorType
     {
@@ -7,6 +7,7 @@
         NotFound = 2,
         Unauthorized = 3,
         Forbidden = 4,
-        InValidCredentials = 5, 
+        InValidCredentials = 5,
+        Conflict = 6,
     }
 }

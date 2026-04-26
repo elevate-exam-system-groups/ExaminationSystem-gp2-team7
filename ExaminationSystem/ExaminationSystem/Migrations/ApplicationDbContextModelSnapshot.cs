@@ -323,53 +323,6 @@ namespace ExaminationSystem.Migrations
                     b.ToTable("Diplomas", (string)null);
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Models.Option", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Explanation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MCQQuestionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OptionText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrderIndex")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MCQQuestionId");
-
-                    b.ToTable("Options", (string)null);
-                });
-
             modelBuilder.Entity("ExaminationSystem.Models.Question", b =>
                 {
                     b.Property<Guid>("Id")
@@ -418,6 +371,53 @@ namespace ExaminationSystem.Migrations
                     b.HasDiscriminator<string>("QuestionType").HasValue("Question");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Models.QuestionOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Explanation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MCQQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OptionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MCQQuestionId");
+
+                    b.ToTable("Options", (string)null);
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Quiz", b =>
@@ -766,7 +766,7 @@ namespace ExaminationSystem.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ExaminationSystem.Models.Option", "SelectedOption")
+                    b.HasOne("ExaminationSystem.Models.QuestionOption", "SelectedOption")
                         .WithMany("SelectedAnswers")
                         .HasForeignKey("SelectedOptionId")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -808,17 +808,6 @@ namespace ExaminationSystem.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Models.Option", b =>
-                {
-                    b.HasOne("ExaminationSystem.Models.MultipleChoiceQuestion", "MCQQuestion")
-                        .WithMany("Options")
-                        .HasForeignKey("MCQQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MCQQuestion");
-                });
-
             modelBuilder.Entity("ExaminationSystem.Models.Question", b =>
                 {
                     b.HasOne("ExaminationSystem.Models.Quiz", "Quiz")
@@ -828,6 +817,17 @@ namespace ExaminationSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Models.QuestionOption", b =>
+                {
+                    b.HasOne("ExaminationSystem.Models.MultipleChoiceQuestion", "MCQQuestion")
+                        .WithMany("Options")
+                        .HasForeignKey("MCQQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MCQQuestion");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Quiz", b =>
@@ -957,14 +957,14 @@ namespace ExaminationSystem.Migrations
                     b.Navigation("StudentEnrollments");
                 });
 
-            modelBuilder.Entity("ExaminationSystem.Models.Option", b =>
-                {
-                    b.Navigation("SelectedAnswers");
-                });
-
             modelBuilder.Entity("ExaminationSystem.Models.Question", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("ExaminationSystem.Models.QuestionOption", b =>
+                {
+                    b.Navigation("SelectedAnswers");
                 });
 
             modelBuilder.Entity("ExaminationSystem.Models.Quiz", b =>

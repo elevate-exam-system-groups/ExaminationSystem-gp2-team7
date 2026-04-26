@@ -1,13 +1,13 @@
-﻿using MediatR;
-
+using ExaminationSystem.Common;
 using ExaminationSystem.Contracts;
 using ExaminationSystem.Models;
 using ExaminationSystem.Services;
-
+using MediatR;
 using Microsoft.AspNetCore.Identity;
+
 namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
 {
-    public class SendOtpHandler: IRequestHandler<SendOtpCommand, string>
+    public class SendOtpHandler : IRequestHandler<SendOtpCommand, Result<string>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
@@ -19,33 +19,32 @@ namespace ExaminationSystem.Features.Auth.ForgetPassword.OTP
             _userManager = userManager;
             _emailService = emailService;
         }
-        public async Task<string> Handle(SendOtpCommand request, CancellationToken cancellationToken)
+
+        public async Task<Result<string>> Handle(SendOtpCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.Email))
-                throw new Exception("Email is required");
-            if (!request.Email.Contains("@"))
-                throw new Exception("Invalid email format");
-            
-            var user = await _userManager.FindByEmailAsync(request.Email);
            
+
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            
             if (user == null)
-                return "Verification code has been sent to your email";
-            
+                return Result<string>.Success("Verification code has been sent to your email");
+
             var otp = OtpHelper.GenerateOtp();
-            
+
             user.EmailOtpCode = OtpHelper.HashOtp(otp);
             user.EmailOtpExpiresAt = DateTime.UtcNow.AddMinutes(10);
             user.EmailOtpAttempts = 0;
-           
+
             await _userManager.UpdateAsync(user);
-           
+
             await _emailService.SendEmailAsync(
                 user.Email,
                 "Password Reset Code",
                 $"<h2>Your verification code: {otp}</h2><p>Valid for 10 minutes</p>"
             );
-            return "Verification code has been sent to your email";
-        }
 
+            return Result<string>.Success("Verification code has been sent to your email");
+        }
     }
 }
