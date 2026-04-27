@@ -65,7 +65,7 @@ namespace ExaminationSystem.Features.AnswerQuestions
             var isValidOption = question.Answers.Any(a => a.Id == request.AnswerQuestionDTO.selected_option_id);
             if (!isValidOption)
                 return Result<AnsewrQuestionResponse>.Failure("Invalid option", StatusCodes.Status422UnprocessableEntity);
-            // 7. Upsert (update أو insert)
+            // 7. update
             var existingAnswer = await attemps.FirstOrDefaultAsync(a =>
                     a.Id == request.AnswerQuestionDTO.AttemptId &&
                     a.Quiz.Questions.Any(q => q.Id == request.AnswerQuestionDTO.question_id));
