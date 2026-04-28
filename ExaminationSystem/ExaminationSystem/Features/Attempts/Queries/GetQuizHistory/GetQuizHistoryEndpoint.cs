@@ -17,9 +17,7 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetQuizHistory
             _mediator = mediator;
         }
 
-        /// <summary>
-        /// GET /api/student/attempts — لسته المحاولات بتاعت الطالب (paginated + filters)
-        /// </summary>
+      
         [HttpGet]
         public async Task<IActionResult> GetQuizHistory(
             [FromQuery(Name = "quiz_id")] Guid? quizId,

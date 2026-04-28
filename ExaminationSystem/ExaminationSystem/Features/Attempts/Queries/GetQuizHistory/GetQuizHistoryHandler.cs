@@ -20,22 +20,22 @@ namespace ExaminationSystem.Features.Attempts.Queries.GetQuizHistory
         public async Task<Result<PagedResponse<QuizHistoryItemResponse>>> Handle(
             GetQuizHistoryQuery request, CancellationToken cancellationToken)
         {
-            // ابدأ بكل محاولات الطالب
+           
             var query = _unitOfWork.GetRepository<Attempt>().AsQueryable()
                 .Where(a => a.StudentId == request.StudentId);
 
-            // فلتر بالكويز
+           
             if (request.QuizId.HasValue)
                 query = query.Where(a => a.QuizId == request.QuizId.Value);
 
-            // فلتر بالدبلوما (عن طريق Quiz → DiplomaId)
+            
             if (request.DiplomaId.HasValue)
                 query = query.Where(a => a.Quiz.DiplomaId == request.DiplomaId.Value);
 
-            // عدد النتائج الكلي (قبل pagination)
+            
             var total = await query.CountAsync(cancellationToken);
 
-            // جيب الصفحة المطلوبة مع الترتيب
+            
             var items = await query
                 .OrderByDescending(a => a.SubmittedAt)
                 .Skip((request.Page - 1) * request.PerPage)
